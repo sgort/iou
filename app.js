@@ -192,9 +192,10 @@ class LelystadDemo {
     // USE CASE C: JURISDICTIONAL COORDINATION
     renderJurisdictionalView() {
         this.setupLayerControls();
-        this.renderOverlapAnalysis();
         // Initial map render with default layers
         this.updateMapVisualization();
+        // Render overlap analysis AFTER checkboxes are set up
+        this.renderOverlapAnalysis();
     }
     
     setupLayerControls() {
@@ -213,16 +214,27 @@ class LelystadDemo {
         layerCheckboxes.forEach(checkbox => {
             checkbox.addEventListener('change', (e) => {
                 const layer = e.target.dataset.layer;
+                // Use arrow function to preserve 'this' context
                 this.toggleMapLayer(layer, e.target.checked);
             });
         });
     }
     
     toggleMapLayer(layer, visible) {
-        console.log(`Layer ${layer} ${visible ? 'enabled' : 'disabled'}`);
+        console.log(`[V5] Layer ${layer} ${visible ? 'enabled' : 'disabled'}`);
         
-        // Update the map visualization based on layer toggles
-        this.updateMapVisualization();
+        try {
+            // Update the map visualization based on layer toggles
+            console.log('[V5] Updating map visualization...');
+            this.updateMapVisualization();
+            
+            // Update overlap analysis to show only relevant overlaps
+            console.log('[V5] Calling renderOverlapAnalysis...');
+            this.renderOverlapAnalysis();
+            console.log('[V5] renderOverlapAnalysis completed');
+        } catch (error) {
+            console.error('[V5] Error in toggleMapLayer:', error);
+        }
     }
     
     updateMapVisualization() {
@@ -329,9 +341,73 @@ class LelystadDemo {
     }
     
     renderOverlapAnalysis() {
+        console.log('[V5] === renderOverlapAnalysis START ===');
         const container = document.getElementById('overlap-analysis');
         
-        const html = mockData.overlaps.map(overlap => `
+        if (!container) {
+            console.error('[V5] overlap-analysis container not found!');
+            return;
+        }
+        
+        console.log('[V5] Container found:', container);
+        
+        try {
+            // Get current active layers - explicitly get checkboxes
+            const provincialCheckbox = document.querySelector('[data-layer="provincial"]');
+            const municipalCheckbox = document.querySelector('[data-layer="municipal"]');
+            const nnnCheckbox = document.querySelector('[data-layer="nnn"]');
+            const natura2000Checkbox = document.querySelector('[data-layer="natura2000"]');
+            const protectedCheckbox = document.querySelector('[data-layer="protected"]');
+            
+            console.log('Checkboxes found:', {
+                provincial: !!provincialCheckbox,
+                municipal: !!municipalCheckbox,
+                nnn: !!nnnCheckbox,
+                natura2000: !!natura2000Checkbox,
+                protected: !!protectedCheckbox
+            });
+            
+            const activeLayers = {
+                provincial: provincialCheckbox ? provincialCheckbox.checked : false,
+                municipal: municipalCheckbox ? municipalCheckbox.checked : false,
+                nnn: nnnCheckbox ? nnnCheckbox.checked : false,
+                natura2000: natura2000Checkbox ? natura2000Checkbox.checked : false,
+                protected: protectedCheckbox ? protectedCheckbox.checked : false
+            };
+            
+            console.log('Active layers:', activeLayers);
+            
+            // Filter overlaps based on active layers
+            const filteredOverlaps = mockData.overlaps.filter(overlap => {
+                // If overlap has relatedLayers, check if ALL related layers are active
+                if (overlap.relatedLayers && overlap.relatedLayers.length > 0) {
+                    const shouldShow = overlap.relatedLayers.every(layer => activeLayers[layer]);
+                    console.log(`Overlap ${overlap.id}:`, overlap.relatedLayers, '→', shouldShow);
+                    return shouldShow;
+                }
+                // If no relatedLayers specified, always show (backwards compatibility)
+                return true;
+            });
+            
+            console.log('Filtered overlaps count:', filteredOverlaps.length);
+        
+        // Show message if no overlaps match the current layer selection
+        if (filteredOverlaps.length === 0) {
+            container.innerHTML = `
+                <div style="padding: var(--space-xl); text-align: center; color: var(--color-text-muted);">
+                    <svg width="48" height="48" fill="currentColor" viewBox="0 0 20 20" style="opacity: 0.3; margin-bottom: var(--space-md);">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"/>
+                    </svg>
+                    <p><strong>Geen overlappingen gevonden</strong></p>
+                    <p style="font-size: var(--font-size-sm); margin-top: var(--space-xs);">
+                        Selecteer meerdere kaartlagen om jurisdictionele overlappingen te zien
+                    </p>
+                </div>
+            `;
+            return;
+        }
+        
+        const html = filteredOverlaps.map(overlap => `
             <div class="overlap-item">
                 <div class="overlap-header">
                     <div class="overlap-icon">
@@ -341,9 +417,26 @@ class LelystadDemo {
                     </div>
                     <div>
                         <h4 class="overlap-title">${overlap.title}</h4>
-                        <div style="display: flex; gap: var(--space-md); margin-top: var(--space-xs);">
-                            <span class="badge badge-warning">CoÃ¶rdinatie Vereist</span>
+                        <div style="display: flex; gap: var(--space-md); margin-top: var(--space-xs); flex-wrap: wrap;">
+                            <span class="badge badge-warning">Coördinatie Vereist</span>
                             <span class="badge badge-info">${overlap.authority}</span>
+                            ${overlap.relatedLayers ? overlap.relatedLayers.map(layer => {
+                                const layerNames = {
+                                    'provincial': 'Provinciaal',
+                                    'municipal': 'Gemeentelijk',
+                                    'nnn': 'NNN',
+                                    'natura2000': 'Natura 2000',
+                                    'protected': 'Beschermd Habitat'
+                                };
+                                const layerColors = {
+                                    'provincial': '#01689B',
+                                    'municipal': '#F39200',
+                                    'nnn': '#39870C',
+                                    'natura2000': '#7FCDBB',
+                                    'protected': '#FFD700'
+                                };
+                                return `<span class="badge" style="background-color: ${layerColors[layer]}; color: white; font-size: var(--font-size-xs);">${layerNames[layer]}</span>`;
+                            }).join('') : ''}
                         </div>
                     </div>
                 </div>
@@ -370,16 +463,31 @@ class LelystadDemo {
                 </div>
                 ${overlap.notes ? `
                     <div style="margin-top: var(--space-md); padding: var(--space-md); background-color: var(--color-info-light); border-radius: var(--radius-md);">
-                        <strong style="font-size: var(--font-size-sm); color: var(--color-info);">ðŸ“‹ Opmerking:</strong>
+                        <strong style="font-size: var(--font-size-sm); color: var(--color-info);">📋 Opmerking:</strong>
                         <p style="margin: var(--space-xs) 0 0 0; font-size: var(--font-size-sm); color: var(--color-text);">${overlap.notes}</p>
                     </div>
                 ` : ''}
             </div>
         `).join('');
         
-        container.innerHTML = html;
+        // Add summary header
+        const summaryHtml = `
+            <div style="padding: var(--space-md); background-color: var(--color-background); border-radius: var(--radius-md); margin-bottom: var(--space-lg); border-left: 4px solid var(--color-primary);">
+                <strong style="color: var(--color-primary);">
+                    ${filteredOverlaps.length} overlapping${filteredOverlaps.length === 1 ? '' : 'en'} gevonden
+                </strong>
+                <p style="font-size: var(--font-size-sm); color: var(--color-text-muted); margin-top: var(--space-xs);">
+                    Gebaseerd op de huidige kaartlaag selectie
+                </p>
+            </div>
+        `;
+        
+        container.innerHTML = summaryHtml + html;
+        console.log('=== renderOverlapAnalysis COMPLETE ===');
+        } catch (error) {
+            console.error('Error in renderOverlapAnalysis:', error);
+        }
     }
-    
     // USE CASE E: KNOWLEDGE GRAPH EXPLORER
     renderKnowledgeGraph() {
         this.setupEntryPoints();
@@ -768,5 +876,7 @@ LIMIT 20`;
 let demo;
 document.addEventListener('DOMContentLoaded', () => {
     demo = new LelystadDemo();
-    console.log('Lelystad Ringweg Demonstrator geladen');
+    window.demo = demo; // Make globally accessible for debugging
+    console.log('[V5] Lelystad Ringweg Demonstrator geladen');
+    console.log('[V5] Demo object:', demo);
 });

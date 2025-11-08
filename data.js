@@ -281,7 +281,8 @@ const mockData = {
             requirements: ["req-nnn-001", "req-nnn-002"],
             coordinationNeeded: true,
             authority: "Provincie Flevoland (primair)",
-            notes: "Gemeente Lelystad moet worden geconsulteerd voor werkzaamheden binnen 25m buffer"
+            notes: "Gemeente Lelystad moet worden geconsulteerd voor werkzaamheden binnen 25m buffer",
+            relatedLayers: ["provincial", "municipal", "nnn"]
         },
         {
             id: "overlap-002",
@@ -291,17 +292,19 @@ const mockData = {
             requirements: ["req-noise-001", "req-overlap-001"],
             coordinationNeeded: true,
             authority: "Beide - afstemming vereist",
-            notes: "Ontwerp moet voldoen aan strengste norm (provinciale norm)"
+            notes: "Ontwerp moet voldoen aan strengste norm (provinciale norm)",
+            relatedLayers: ["provincial", "municipal"]
         },
         {
             id: "overlap-003",
             title: "Waterafvoer Grensoverschrijdend",
-            description: "Waterafvoersysteem bij kilometer 3.5 beÃ¯nvloedt zowel provinciaal als gemeentelijk gebied. Waterschap heeft overkoepelende bevoegdheid.",
+            description: "Waterafvoersysteem bij kilometer 3.5 beïnvloedt zowel provinciaal als gemeentelijk gebied. Waterschap heeft overkoepelende bevoegdheid.",
             affectedSections: ["Laan van Nieuw Land (km 3.4-3.6)", "Verlengde Westerdreef (km 0.2-0.5)"],
             requirements: ["req-water-001"],
             coordinationNeeded: true,
             authority: "Waterschap Zuiderzeeland",
-            notes: "Provincie en gemeente moeten beiden goedkeuring waterschap hebben"
+            notes: "Provincie en gemeente moeten beiden goedkeuring waterschap hebben",
+            relatedLayers: ["provincial", "municipal"]
         }
     ],
 
