@@ -11,7 +11,7 @@
 
 ## Document Navigation
 
-- **[Part 1](Information_Architecture_Framework_Lelystad_Ringweg_COMPLETE.md)**: Sections 1-3 (Ontology, Standards, Concepts)
+- **[Part 1](./Framework_Part%201_Sections_1-3.md)**: Sections 1-3 (Ontology, Standards, Concepts)
 - **Part 2** (this document): Sections 4-7 (Information Model, Process, Roles, Demonstrator)
 - **Part 3**: Sections 8-10 (Roadmap, Metrics, Next Steps)
 
