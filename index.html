@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lelystad Ringweg - Informatieplatform Demonstrator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <div class="header-logo">
+                <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="40" height="40" fill="#01689B"/>
+                    <path d="M10 30V10H15V25H25V30H10Z" fill="white"/>
+                </svg>
+                <div class="header-title">
+                    <h1>Provincie Flevoland</h1>
+                    <p>Lelystad-Zuid Ringweg Project</p>
+                </div>
+            </div>
+            <div class="header-meta">
+                <span class="badge">Demonstrator</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="navigation">
+        <div class="nav-container">
+            <button class="nav-button active" data-view="compliance" role="tab" aria-selected="true">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                    <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"/>
+                </svg>
+                Compliance Dashboard
+            </button>
+            <button class="nav-button" data-view="jurisdictional" role="tab" aria-selected="false">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M12 1.586l-4 4v12.828l4-4V1.586zM3.707 3.293A1 1 0 002 4v10a1 1 0 00.293.707L6 18.414V5.586L3.707 3.293zM17.707 5.293L14 1.586v12.828l2.293 2.293A1 1 0 0018 16V6a1 1 0 00-.293-.707z"/>
+                </svg>
+                Jurisdictionele Coördinatie
+            </button>
+            <button class="nav-button" data-view="knowledge" role="tab" aria-selected="false">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/>
+                </svg>
+                Knowledge Graph Verkenner
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Use Case A: Compliance Dashboard -->
+        <section id="compliance-view" class="view active" role="tabpanel">
+            <div class="view-header">
+                <h2>Compliance Dashboard</h2>
+                <p class="view-description">Overzicht van alle eisen die van toepassing zijn op wegvakken, met status en verantwoordelijken</p>
+            </div>
+
+            <!-- Filters -->
+            <div class="filter-bar">
+                <div class="filter-group">
+                    <label for="road-section-filter">Wegvak</label>
+                    <select id="road-section-filter" class="select-input">
+                        <option value="all">Alle wegvakken</option>
+                        <option value="laan-nieuw-land">Laan van Nieuw Land</option>
+                        <option value="verlengde-westerdreef">Verlengde Westerdreef</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="status-filter">Status</label>
+                    <select id="status-filter" class="select-input">
+                        <option value="all">Alle statussen</option>
+                        <option value="compliant">Compliant</option>
+                        <option value="in-progress">In behandeling</option>
+                        <option value="pending">Openstaand</option>
+                        <option value="overdue">Achterstallig</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="domain-filter">Domein</label>
+                    <select id="domain-filter" class="select-input">
+                        <option value="all">Alle domeinen</option>
+                        <option value="nnn">NNN Maatregelen</option>
+                        <option value="natura2000">Natura 2000</option>
+                        <option value="protected-species">Beschermde Soorten</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Summary Cards -->
+            <div class="summary-cards">
+                <div class="card summary-card">
+                    <div class="card-icon success">
+                        <svg width="24" height="24" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                        </svg>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-value">12</div>
+                        <div class="card-label">Compliant</div>
+                    </div>
+                </div>
+                <div class="card summary-card">
+                    <div class="card-icon warning">
+                        <svg width="24" height="24" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"/>
+                        </svg>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-value">5</div>
+                        <div class="card-label">In behandeling</div>
+                    </div>
+                </div>
+                <div class="card summary-card">
+                    <div class="card-icon error">
+                        <svg width="24" height="24" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"/>
+                        </svg>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-value">2</div>
+                        <div class="card-label">Achterstallig</div>
+                    </div>
+                </div>
+                <div class="card summary-card">
+                    <div class="card-icon info">
+                        <svg width="24" height="24" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"/>
+                        </svg>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-value">19</div>
+                        <div class="card-label">Totaal</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Requirements Table -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>Uitvoerbare Eisen</h3>
+                    <span class="badge badge-info">SPARQL Query Results</span>
+                </div>
+                <div class="table-container">
+                    <table class="data-table" id="requirements-table">
+                        <thead>
+                            <tr>
+                                <th>Eis</th>
+                                <th>Wegvak</th>
+                                <th>Domein</th>
+                                <th>Status</th>
+                                <th>Verantwoordelijke</th>
+                                <th>Deadline</th>
+                                <th>Acties</th>
+                            </tr>
+                        </thead>
+                        <tbody id="requirements-tbody">
+                            <!-- Populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Use Case C: Jurisdictional Coordination -->
+        <section id="jurisdictional-view" class="view" role="tabpanel">
+            <div class="view-header">
+                <h2>Jurisdictionele Coördinatie</h2>
+                <p class="view-description">Visualisatie van bestuurlijke grenzen en regelgeving overlappingen tussen provincie en gemeente</p>
+            </div>
+
+            <!-- Map Container -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>Interactieve Kaart</h3>
+                    <div class="button-group">
+                        <button class="button button-secondary" id="toggle-layers">
+                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+                            </svg>
+                            Lagen
+                        </button>
+                        <span class="badge badge-info">GeoSPARQL Visualisatie</span>
+                    </div>
+                </div>
+                <div class="map-container" id="jurisdictional-map">
+                    <!-- Map placeholder -->
+                    <div class="map-placeholder">
+                        <svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Provincial section -->
+                            <rect x="50" y="50" width="200" height="300" fill="#E8F4F8" stroke="#01689B" stroke-width="3" rx="5"/>
+                            <text x="150" y="90" font-size="16" font-weight="600" text-anchor="middle" fill="#01689B">Provinciaal</text>
+                            <text x="150" y="115" font-size="14" text-anchor="middle" fill="#154273">Laan van Nieuw Land</text>
+                            
+                            <!-- Municipal section -->
+                            <rect x="350" y="50" width="200" height="300" fill="#FFF4E8" stroke="#F39200" stroke-width="3" rx="5"/>
+                            <text x="450" y="90" font-size="16" font-weight="600" text-anchor="middle" fill="#F39200">Gemeentelijk</text>
+                            <text x="450" y="115" font-size="14" text-anchor="middle" fill="#D97700">Verlengde Westerdreef</text>
+                            
+                            <!-- NNN Corridor overlay -->
+                            <rect x="180" y="120" width="240" height="80" fill="#E8F8E8" stroke="#39870C" stroke-width="3" opacity="0.85" rx="5"/>
+                            <text x="300" y="160" font-size="14" font-weight="600" text-anchor="middle" fill="#39870C">NNN Corridor</text>
+                            <text x="300" y="180" font-size="12" text-anchor="middle" fill="#2A6709">Overlap Zone</text>
+                            
+                            <!-- Connection point -->
+                            <circle cx="250" cy="200" r="8" fill="#D52B1E" stroke="white" stroke-width="2"/>
+                            <text x="300" y="250" font-size="12" text-anchor="middle" fill="#767676">Knooppunt</text>
+                            
+                            <!-- Legend -->
+                            <g transform="translate(50, 370)">
+                                <rect x="0" y="0" width="20" height="15" fill="#01689B"/>
+                                <text x="25" y="12" font-size="11" fill="#2C2C2C">Provincie Flevoland</text>
+                                
+                                <rect x="180" y="0" width="20" height="15" fill="#F39200"/>
+                                <text x="205" y="12" font-size="11" fill="#2C2C2C">Gemeente Lelystad</text>
+                                
+                                <rect x="360" y="0" width="20" height="15" fill="#39870C" opacity="0.7"/>
+                                <text x="385" y="12" font-size="11" fill="#2C2C2C">Ecologische Zone</text>
+                            </g>
+                        </svg>
+                        <p class="map-caption">Conceptuele weergave van jurisdictionele grenzen en overlap zones</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Layer Control -->
+            <div class="card" id="layer-panel">
+                <div class="card-header">
+                    <h3>Kaartlagen</h3>
+                </div>
+                <div class="layer-controls">
+                    <div class="layer-control-group">
+                        <h4>Bestuurlijke Grenzen</h4>
+                        <label class="checkbox-label">
+                            <input type="checkbox" checked class="layer-checkbox" data-layer="provincial">
+                            <span class="checkbox-custom"></span>
+                            <span class="layer-name">
+                                <span class="layer-color" style="background: #01689B;"></span>
+                                Provinciale Grens (Laan van Nieuw Land)
+                            </span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" checked class="layer-checkbox" data-layer="municipal">
+                            <span class="checkbox-custom"></span>
+                            <span class="layer-name">
+                                <span class="layer-color" style="background: #F39200;"></span>
+                                Gemeentelijke Grens (Verlengde Westerdreef)
+                            </span>
+                        </label>
+                    </div>
+                    <div class="layer-control-group">
+                        <h4>Ecologische Zones</h4>
+                        <label class="checkbox-label">
+                            <input type="checkbox" checked class="layer-checkbox" data-layer="nnn">
+                            <span class="checkbox-custom"></span>
+                            <span class="layer-name">
+                                <span class="layer-color" style="background: #39870C;"></span>
+                                NNN Corridor
+                            </span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" class="layer-checkbox" data-layer="natura2000">
+                            <span class="checkbox-custom"></span>
+                            <span class="layer-name">
+                                <span class="layer-color" style="background: #7FCDBB;"></span>
+                                Natura 2000 Gebied
+                            </span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" class="layer-checkbox" data-layer="protected">
+                            <span class="checkbox-custom"></span>
+                            <span class="layer-name">
+                                <span class="layer-color" style="background: #FFD700;"></span>
+                                Beschermde Soorten Habitat
+                            </span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Overlap Analysis -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>Overlap Analyse</h3>
+                    <span class="badge badge-info">Cross-jurisdictional Query</span>
+                </div>
+                <div id="overlap-analysis">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Use Case E: Knowledge Graph Explorer -->
+        <section id="knowledge-view" class="view" role="tabpanel">
+            <div class="view-header">
+                <h2>Knowledge Graph Verkenner</h2>
+                <p class="view-description">Navigeer door het semantische netwerk van concepten, regelgeving en verantwoordelijken</p>
+            </div>
+
+            <!-- Search and Entry Points -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>Beginpunt Selecteren</h3>
+                </div>
+                <div class="entry-points">
+                    <button class="entry-point-card" data-concept="ecological-protocol">
+                        <div class="entry-icon">
+                            <svg width="32" height="32" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z"/>
+                            </svg>
+                        </div>
+                        <div class="entry-content">
+                            <h4>Ecologisch Werkprotocol</h4>
+                            <p>Start vanaf het werkprotocol</p>
+                        </div>
+                    </button>
+                    <button class="entry-point-card" data-concept="nnn-measure">
+                        <div class="entry-icon">
+                            <svg width="32" height="32" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1H8a3 3 0 00-3 3v1.5a1.5 1.5 0 01-3 0V6z"/>
+                                <path d="M6 12a2 2 0 012-2h8a2 2 0 012 2v2a2 2 0 01-2 2H2h2a2 2 0 002-2v-2z"/>
+                            </svg>
+                        </div>
+                        <div class="entry-content">
+                            <h4>NNN Maatregelen</h4>
+                            <p>Start vanaf mitigerende maatregel</p>
+                        </div>
+                    </button>
+                    <button class="entry-point-card" data-concept="road-section">
+                        <div class="entry-icon">
+                            <svg width="32" height="32" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"/>
+                            </svg>
+                        </div>
+                        <div class="entry-content">
+                            <h4>Wegvak</h4>
+                            <p>Start vanaf infrastructuur</p>
+                        </div>
+                    </button>
+                    <button class="entry-point-card" data-concept="regulation">
+                        <div class="entry-icon">
+                            <svg width="32" height="32" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9 2a2 2 0 00-2 2v8a2 2 0 002 2h6a2 2 0 002-2V6.414A2 2 0 0016.414 5L14 2.586A2 2 0 0012.586 2H9z"/>
+                                <path d="M3 8a2 2 0 012-2v10h8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"/>
+                            </svg>
+                        </div>
+                        <div class="entry-content">
+                            <h4>Regelgeving</h4>
+                            <p>Start vanaf wettelijke bron</p>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Graph Visualization -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>Semantische Relaties</h3>
+                    <div class="button-group">
+                        <button class="button button-secondary" id="zoom-in">
+                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"/>
+                            </svg>
+                        </button>
+                        <button class="button button-secondary" id="zoom-out">
+                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"/>
+                            </svg>
+                        </button>
+                        <span class="badge badge-info">RDF Graph Visualisatie</span>
+                    </div>
+                </div>
+                <div id="knowledge-graph-container">
+                    <!-- Graph will be rendered here -->
+                </div>
+            </div>
+
+            <!-- Selected Node Details -->
+            <div class="card" id="node-details" style="display: none;">
+                <div class="card-header">
+                    <h3>Details</h3>
+                    <button class="button button-ghost" id="close-details">
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"/>
+                        </svg>
+                    </button>
+                </div>
+                <div id="node-details-content">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- SPARQL Query Display -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>Onderliggende SPARQL Query</h3>
+                    <button class="button button-secondary" id="copy-query">
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"/>
+                            <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"/>
+                        </svg>
+                        Kopieer
+                    </button>
+                </div>
+                <pre id="sparql-query-display" class="code-block"><code># Voorbeeld SPARQL query voor Knowledge Graph navigatie
+PREFIX flvl: &lt;https://data.flevoland.nl/lelystad-ringweg/&gt;
+PREFIX flvl-def: &lt;https://data.flevoland.nl/def/&gt;
+PREFIX skos: &lt;http://www.w3.org/2004/02/skos/core#&gt;
+PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
+
+SELECT ?related ?relationType ?label ?description
+WHERE {
+    ?startNode ?relationType ?related .
+    ?related skos:prefLabel ?label .
+    OPTIONAL { ?related skos:definition ?description }
+    FILTER(lang(?label) = "nl")
+}
+LIMIT 20</code></pre>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h4>Over deze Demonstrator</h4>
+                <p>Deze statische demonstrator visualiseert de voorgestelde informatiearsitectuur voor het Lelystad-Zuid Ringweg project. De getoonde data is fictief en dient ter illustratie.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Technologie</h4>
+                <ul class="footer-links">
+                    <li><a href="#">RDF/SKOS Ontologie</a></li>
+                    <li><a href="#">MIM Informatiemodellering</a></li>
+                    <li><a href="#">NL-SBB Begrippenkader</a></li>
+                    <li><a href="#">CPSV-AP/CPRMV Vocabulaires</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Contact</h4>
+                <p>Provincie Flevoland<br>
+                Postbus 55<br>
+                8200 AB Lelystad</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Provincie Flevoland | <a href="#">Privacy</a> | <a href="#">Toegankelijkheid</a></p>
+            <p class="demo-badge">🚧 Demonstrator - Niet voor productiegebruik</p>
+        </div>
+    </footer>
+
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

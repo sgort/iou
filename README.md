@@ -1,93 +1,232 @@
-# iou
+# Lelystad-Zuid Ringweg - Informatieplatform Demonstrator
 
+Een statische web-demonstrator die de voorgestelde informatiearsitectuur visualiseert voor het Lelystad-Zuid Ringweg project.
 
+## 🎯 Doel
 
-## Getting started
+Deze demonstrator toont hoe een semantic web-gebaseerde informatiearsitectuur provinciale infrastructuurprojecten kan ondersteunen door:
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+- **Regulatory compliance management** via linked data
+- **Cross-jurisdictional coordination** met geospatiale visualisatie
+- **Knowledge graph exploration** voor semantische navigatie
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+## 🏗️ Architectuur Basis
 
-## Add your files
+De demonstrator is gebouwd volgens:
+- **MIM** (Metamodel voor Informatie Modellering)
+- **NL-SBB** (Standaard voor Begrippenbeschrijving)
+- **CPSV-AP/CPRMV** (EU Public Service Vocabularies)
+- **NL Design System** (Nederlandse overheids-UX standaarden)
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
+## 📋 Use Cases
+
+### Use Case A: Compliance Dashboard
+Toont alle uitvoerbare eisen per wegvak met:
+- Realtime status monitoring
+- Verantwoordelijke rollen
+- Deadline tracking
+- Filtering op domein/status/wegvak
+
+### Use Case C: Jurisdictionele Coördinatie
+Visualiseert:
+- Provinciale vs. gemeentelijke grenzen
+- Ecologische zones (NNN, Natura 2000)
+- Overlap-analyses met coördinatievereisten
+- Interactieve kaartlagen
+
+### Use Case E: Knowledge Graph Verkenner
+Navigatie door:
+- Semantische relaties tussen concepten
+- Van werkprotocol → regelgeving → verantwoordelijken
+- RDF/SKOS concept hiërarchieën
+- SPARQL queries voor elk pad
+
+## 🚀 Deployment naar Azure Static Web Apps
+
+### Vereisten
+- Azure account met actieve subscription
+- GitHub repository
+- Azure CLI (optioneel)
+
+### Stap 1: GitHub Repository Setup
+
+```bash
+# Clone of maak nieuwe repository
+git init
+git add .
+git commit -m "Initial commit: Lelystad Ringweg Demonstrator"
+git remote add origin https://github.com/YOURUSERNAME/lelystad-ringweg-demo.git
+git push -u origin main
+```
+
+### Stap 2: Azure Static Web App Aanmaken
+
+#### Via Azure Portal:
+
+1. Ga naar [portal.azure.com](https://portal.azure.com)
+2. Klik "+ Create a resource" → "Static Web App"
+3. Vul in:
+   - **Subscription**: Kies je subscription
+   - **Resource Group**: Maak nieuwe of selecteer bestaande
+   - **Name**: `lelystad-ringweg-demo`
+   - **Hosting plan**: Free
+   - **Region**: West Europe
+   - **Deployment details**:
+     - Source: GitHub
+     - Organization: Je GitHub username
+     - Repository: `lelystad-ringweg-demo`
+     - Branch: `main`
+4. **Build Details**:
+   - Build Presets: Custom
+   - App location: `/`
+   - Api location: (leeg laten)
+   - Output location: (leeg laten)
+
+5. Klik "Review + create" → "Create"
+
+Azure zal automatisch een GitHub Actions workflow aanmaken.
+
+#### Via Azure CLI:
+
+```bash
+# Login
+az login
+
+# Create resource group
+az group create --name rg-lelystad-demo --location westeurope
+
+# Create static web app
+az staticwebapp create \
+  --name lelystad-ringweg-demo \
+  --resource-group rg-lelystad-demo \
+  --source https://github.com/YOURUSERNAME/lelystad-ringweg-demo \
+  --location westeurope \
+  --branch main \
+  --app-location "/" \
+  --login-with-github
+```
+
+### Stap 3: Custom Domain Configureren (iou.open-regels.nl)
+
+1. In Azure Portal, ga naar je Static Web App
+2. Ga naar "Custom domains"
+3. Klik "+ Add"
+4. Selecteer "Custom domain on other DNS"
+5. Voer in: `iou.open-regels.nl`
+6. Azure geeft je een TXT record om toe te voegen aan je DNS
+
+**DNS Configuratie (bij je DNS provider):**
 
 ```
-cd existing_repo
-git remote add origin https://git.open-regels.nl/showcases/iou.git
-git branch -M main
-git push -uf origin main
+Type: CNAME
+Name: iou
+Value: [jouw-azure-static-web-app-url].azurestaticapps.net
+
+Type: TXT
+Name: _dnsauth.iou
+Value: [validation-token-from-azure]
 ```
 
-## Integrate with your tools
+7. Wacht op DNS propagatie (5-10 minuten)
+8. Klik "Validate" in Azure Portal
 
-- [ ] [Set up project integrations](https://git.open-regels.nl/showcases/iou/-/settings/integrations)
+### Stap 4: HTTPS Certificaat
 
-## Collaborate with your team
+Azure Static Web Apps voorziet automatisch van gratis SSL certificaten via Let's Encrypt zodra het custom domain is geverifieerd.
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+## 📁 Project Structuur
 
-## Test and Deploy
+```
+lelystad-demo/
+├── index.html          # Hoofd HTML met alle drie views
+├── styles.css          # NL Design System geïnspireerde CSS
+├── app.js             # Applicatie logica en interactie
+├── data.js            # Mock data (requirements, overlaps, graph)
+├── staticwebapp.config.json  # Azure SWA configuratie
+└── README.md          # Deze file
+```
 
-Use the built-in continuous integration in GitLab.
+## 🛠️ Lokale Development
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+### Quick Start
+```bash
+# Installeer geen dependencies nodig - pure static files!
 
-***
+# Start development server
+npm run dev
 
-# Editing this README
+# Of gebruik alternatief:
+python3 -m http.server 3000
+# Open http://localhost:3000
+```
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+### Beschikbare Scripts
 
-## Suggestions for a good README
+```bash
+npm run dev      # Start dev server op http://localhost:3000 (opent auto)
+npm run serve    # Start server op http://localhost:8080
+npm run build    # No-op: static files zijn al klaar
+npm run deploy   # Info: deployment via GitHub Actions
+```
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+### Direct Openen (zonder server)
+```bash
+# Werkt ook, maar CORS restricties mogelijk bij toekomstige API calls
+open index.html
+```
 
-## Name
-Choose a self-explaining name for your project.
+## 🔄 Updates Deployen
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+Elke push naar de `main` branch triggert automatisch een nieuwe deployment:
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+```bash
+git add .
+git commit -m "Update: [beschrijving]"
+git push origin main
+```
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+GitHub Actions zal automatisch builden en deployen naar Azure.
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+## 📊 Mock Data
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+De demonstrator bevat representatieve mock data:
+- **19 requirements** verdeeld over 2 wegvakken
+- **7 domeinen** (NNN, Natura 2000, Beschermde Soorten, etc.)
+- **3 jurisdictional overlaps** tussen provincie en gemeente
+- **20+ knowledge graph nodes** met semantische relaties
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+## 🎨 NL Design System Compliance
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+De UI volgt Nederlandse overheids-richtlijnen:
+- Toegankelijkheid (WCAG 2.1 AA)
+- Consistent kleurgebruik
+- Leesbare typografie
+- Responsive design
+- Focus states voor keyboard navigatie
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+## 🔮 Toekomstige Extensies
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+Voor productie-implementatie zou deze demo uitgebreid worden met:
+- TriplyDB SPARQL endpoint integratie
+- GeoJSON/WFS layers voor echte kaarten (via Leaflet)
+- D3.js voor dynamische graph visualisatie
+- Authentication/Authorization (Azure AD B2C)
+- Real-time updates via WebSockets
+- Export functionaliteit (RDF/Turtle, CSV)
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+## 📝 Licentie
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+Dit is een demonstrator voor Provincie Flevoland. Niet voor productiegebruik.
 
-## License
-For open source projects, say how it is licensed.
+## 👥 Contact
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+Voor vragen over deze demonstrator:
+- **Project**: Lelystad-Zuid Ringweg
+- **Organisatie**: Provincie Flevoland
+- **Type**: Informatiearsitectuur Proof-of-Concept
+
+---
+
+**Status**: 🚧 Demonstrator - Niet voor productiegebruik
+**Laatste update**: November 2024
+**Versie**: 1.0.0

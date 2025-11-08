@@ -1,0 +1,30 @@
+{
+  "name": "lelystad-ringweg-demo",
+  "version": "1.0.0",
+  "description": "Lelystad-Zuid Ringweg Informatieplatform Demonstrator",
+  "main": "index.html",
+  "scripts": {
+    "dev": "npx http-server -p 3000 -o",
+    "start": "npm run dev",
+    "serve": "npx http-server -p 8080",
+    "build": "echo 'No build step needed - static files ready for deployment'",
+    "deploy": "echo 'Deployment handled by GitHub Actions to Azure Static Web Apps'"
+  },
+  "keywords": [
+    "flevoland",
+    "lelystad",
+    "ringweg",
+    "semantic-web",
+    "rdf",
+    "skos",
+    "linked-data"
+  ],
+  "author": "Provincie Flevoland",
+  "license": "UNLICENSED",
+  "private": true,
+  "devDependencies": {},
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  }
+}
