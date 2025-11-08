@@ -342,7 +342,7 @@ class LelystadDemo {
                     <div>
                         <h4 class="overlap-title">${overlap.title}</h4>
                         <div style="display: flex; gap: var(--space-md); margin-top: var(--space-xs);">
-                            <span class="badge badge-warning">Coördinatie Vereist</span>
+                            <span class="badge badge-warning">CoÃ¶rdinatie Vereist</span>
                             <span class="badge badge-info">${overlap.authority}</span>
                         </div>
                     </div>
@@ -370,7 +370,7 @@ class LelystadDemo {
                 </div>
                 ${overlap.notes ? `
                     <div style="margin-top: var(--space-md); padding: var(--space-md); background-color: var(--color-info-light); border-radius: var(--radius-md);">
-                        <strong style="font-size: var(--font-size-sm); color: var(--color-info);">📋 Opmerking:</strong>
+                        <strong style="font-size: var(--font-size-sm); color: var(--color-info);">ðŸ“‹ Opmerking:</strong>
                         <p style="margin: var(--space-xs) 0 0 0; font-size: var(--font-size-sm); color: var(--color-text);">${overlap.notes}</p>
                     </div>
                 ` : ''}

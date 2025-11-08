@@ -1,14 +1,14 @@
 # Lelystad Ringweg Demonstrator - Project Overzicht
 
-## 📦 Wat is Geleverd
+## ðŸ“¦ Wat is Geleverd
 
 Een complete, klaar-voor-deployment statische web demonstrator die drie kerngebruikssituaties visualiseert voor het Lelystad-Zuid Ringweg informatieplatform.
 
 ### Deliverables
 
-✅ **8 Project Bestanden**:
+âœ… **8 Project Bestanden**:
 1. `index.html` - Hoofdpagina met alle drie use cases
-2. `styles.css` - NL Design System-geïnspireerde styling (1300+ regels)
+2. `styles.css` - NL Design System-geÃ¯nspireerde styling (1300+ regels)
 3. `app.js` - Complete applicatie logica met interactiviteit
 4. `data.js` - 19 mock requirements + 3 overlaps + 20 knowledge graph nodes
 5. `staticwebapp.config.json` - Azure Static Web Apps configuratie
@@ -16,10 +16,10 @@ Een complete, klaar-voor-deployment statische web demonstrator die drie kerngebr
 7. `DEPLOYMENT.md` - Stap-voor-stap deployment instructies
 8. `.github/workflows/azure-static-web-apps.yml` - CI/CD pipeline
 
-## 🎯 Use Cases Geïmplementeerd
+## ðŸŽ¯ Use Cases GeÃ¯mplementeerd
 
 ### Use Case A: Compliance Dashboard
-**Status**: ✅ Volledig Functioneel
+**Status**: âœ… Volledig Functioneel
 
 **Functionaliteit**:
 - 19 uitvoerbare eisen met realistische data
@@ -43,8 +43,8 @@ Een complete, klaar-voor-deployment statische web demonstrator die drie kerngebr
 
 ---
 
-### Use Case C: Jurisdictionele Coördinatie
-**Status**: ✅ Volledig Functioneel
+### Use Case C: Jurisdictionele CoÃ¶rdinatie
+**Status**: âœ… Volledig Functioneel
 
 **Functionaliteit**:
 - Conceptuele kaartvisualisatie (SVG-based)
@@ -56,7 +56,7 @@ Een complete, klaar-voor-deployment statische web demonstrator die drie kerngebr
   - Beschermde soorten habitat
 - 3 overlap analyses met details
 - Gelinkte requirements per overlap
-- Coördinatie autoriteiten gespecificeerd
+- CoÃ¶rdinatie autoriteiten gespecificeerd
 
 **Mock Data Scope**:
 - 3 jurisdictional overlaps
@@ -73,7 +73,7 @@ Een complete, klaar-voor-deployment statische web demonstrator die drie kerngebr
 ---
 
 ### Use Case E: Knowledge Graph Verkenner
-**Status**: ✅ Volledig Functioneel
+**Status**: âœ… Volledig Functioneel
 
 **Functionaliteit**:
 - 4 entry point cards (Protocol, Maatregel, Wegvak, Regelgeving)
@@ -101,7 +101,7 @@ Een complete, klaar-voor-deployment statische web demonstrator die drie kerngebr
 
 ---
 
-## 🎨 Design & UX
+## ðŸŽ¨ Design & UX
 
 ### NL Design System Compliance
 
@@ -132,7 +132,7 @@ Een complete, klaar-voor-deployment statische web demonstrator die drie kerngebr
 
 ---
 
-## 📊 Mock Data Realisme
+## ðŸ“Š Mock Data Realisme
 
 ### Requirements (19 stuks)
 Representeren realistische compliance vereisten met:
@@ -150,14 +150,14 @@ Tonen complexe multi-jurisdictional scenarios:
 
 ### Knowledge Graph (20+ nodes)
 Volledig semantisch netwerk met:
-- Concept hiërarchieën (MitigatingMeasure → NNNMeasure)
+- Concept hiÃ«rarchieÃ«n (MitigatingMeasure â†’ NNNMeasure)
 - Regulation-to-requirement traceability
 - Role-to-task assignments
 - Protocol-to-regulation implementation chains
 
 ---
 
-## 🚀 Deployment Ready
+## ðŸš€ Deployment Ready
 
 ### Azure Static Web Apps
 - Zero configuration needed beyond Azure Portal setup
@@ -180,7 +180,7 @@ Volledig semantisch netwerk met:
 
 ---
 
-## 📈 Extensibility
+## ðŸ“ˆ Extensibility
 
 ### Modulaire Structuur
 
@@ -236,13 +236,13 @@ const simulation = d3.forceSimulation(nodes)
 
 ---
 
-## 📋 Next Steps
+## ðŸ“‹ Next Steps
 
 ### Immediate (Week 1)
-1. ✅ Deploy naar Azure Static Web Apps
-2. ✅ Configureer iou.open-regels.nl
-3. ✅ Test alle use cases in productie
-4. ✅ Deel met stakeholders voor feedback
+1. âœ… Deploy naar Azure Static Web Apps
+2. âœ… Configureer iou.open-regels.nl
+3. âœ… Test alle use cases in productie
+4. âœ… Deel met stakeholders voor feedback
 
 ### Short-term (Weken 2-4)
 1. Gather stakeholder feedback
@@ -275,30 +275,30 @@ const simulation = d3.forceSimulation(nodes)
 
 ---
 
-## 💡 Demo Presentation Tips
+## ðŸ’¡ Demo Presentation Tips
 
 ### Voor Tactical/Strategic Stakeholders
 
 **Opening (2 min)**:
-"Deze demonstrator toont hoe we provinciale verantwoordelijkheid voor het Ringweg project kunnen ondersteunen door regelgeving, data en processen samen te brengen in één semantic web platform."
+"Deze demonstrator toont hoe we provinciale verantwoordelijkheid voor het Ringweg project kunnen ondersteunen door regelgeving, data en processen samen te brengen in Ã©Ã©n semantic web platform."
 
 **Use Case A Demo (5 min)**:
-1. Toon summary cards → "Real-time compliance status"
-2. Filter op NNN domein → "Domain-specific views"
-3. Klik een requirement → "Full traceability naar wet"
+1. Toon summary cards â†’ "Real-time compliance status"
+2. Filter op NNN domein â†’ "Domain-specific views"
+3. Klik een requirement â†’ "Full traceability naar wet"
 4. Emphasize: "Geen handmatige Excel-tracking meer"
 
 **Use Case C Demo (5 min)**:
-1. Toggle kaartlagen → "Spatial regulatory context"
-2. Scroll naar overlaps → "Automatic conflict detection"
-3. Klik requirement link → "Integrated compliance view"
-4. Emphasize: "Cross-boundary coördinatie gefaciliteerd"
+1. Toggle kaartlagen â†’ "Spatial regulatory context"
+2. Scroll naar overlaps â†’ "Automatic conflict detection"
+3. Klik requirement link â†’ "Integrated compliance view"
+4. Emphasize: "Cross-boundary coÃ¶rdinatie gefaciliteerd"
 
 **Use Case E Demo (5 min)**:
-1. Klik "Ecologisch Werkprotocol" → "Semantic navigation"
-2. Toon relaties → "Connected knowledge graph"
-3. Klik gerelateerd concept → "Exploratory discovery"
-4. Toon SPARQL query → "Powered by standard web technologies"
+1. Klik "Ecologisch Werkprotocol" â†’ "Semantic navigation"
+2. Toon relaties â†’ "Connected knowledge graph"
+3. Klik gerelateerd concept â†’ "Exploratory discovery"
+4. Toon SPARQL query â†’ "Powered by standard web technologies"
 5. Emphasize: "Knowledge democratisatie"
 
 **Closing (3 min)**:
@@ -309,7 +309,7 @@ const simulation = d3.forceSimulation(nodes)
 
 ---
 
-## 📞 Support Contacten
+## ðŸ“ž Support Contacten
 
 **Technische Vragen**:
 - Azure Static Web Apps: https://learn.microsoft.com/azure/static-web-apps/
@@ -327,9 +327,9 @@ const simulation = d3.forceSimulation(nodes)
 
 ---
 
-## ✅ Checklist voor Go-Live
+## âœ… Checklist voor Go-Live
 
-- [ ] Alle bestanden geüpload naar GitHub
+- [ ] Alle bestanden geÃ¼pload naar GitHub
 - [ ] Azure Static Web App aangemaakt
 - [ ] Deployment succesvol (check via Azure Portal)
 - [ ] Site bereikbaar via default URL
@@ -339,10 +339,10 @@ const simulation = d3.forceSimulation(nodes)
 - [ ] Alle drie use cases tested
 - [ ] Mobile responsiveness verified
 - [ ] Browser compatibility tested (Chrome, Firefox, Safari, Edge)
-- [ ] Stakeholders geïnformeerd over iou.open-regels.nl
+- [ ] Stakeholders geÃ¯nformeerd over iou.open-regels.nl
 
 ---
 
-**Succes met je demonstrator! 🎉**
+**Succes met je demonstrator! ðŸŽ‰**
 
 De basis is gelegd voor een modern, semantisch informatieplatform. Deze demonstrator is klaar om stakeholder feedback te verzamelen en de visie tastbaar te maken.

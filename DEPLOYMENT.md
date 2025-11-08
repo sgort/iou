@@ -36,7 +36,7 @@
 5. Vul het formulier in:
    - **Basics tab**:
      - Subscription: Selecteer je Azure subscription
-     - Resource Group: Maak nieuwe → `rg-lelystad-demo`
+     - Resource Group: Maak nieuwe â†’ `rg-lelystad-demo`
      - Name: `lelystad-ringweg-demo`
      - Plan type: Free
      - Region: West Europe (of dichterbij)
@@ -54,7 +54,7 @@
      - Api location: (leeg laten)
      - Output location: (leeg laten)
 
-6. Klik "Review + create" → "Create"
+6. Klik "Review + create" â†’ "Create"
 
 7. Wacht 1-2 minuten op deployment
 
@@ -172,7 +172,7 @@ Als je handmatig wilt deployen:
      --query "properties.apiKey" -o tsv
    ```
 
-2. Ga naar GitHub repository → Settings → Secrets and variables → Actions
+2. Ga naar GitHub repository â†’ Settings â†’ Secrets and variables â†’ Actions
 
 3. Klik "New repository secret"
 
@@ -187,7 +187,7 @@ Als je handmatig wilt deployen:
 Nu bij elke `git push` naar `main`:
 1. GitHub Actions wordt getriggerd
 2. Code wordt gebouwd (hoewel wij geen build stap hebben)
-3. Bestanden worden geüpload naar Azure
+3. Bestanden worden geÃ¼pload naar Azure
 4. Je site is binnen 1-2 minuten bijgewerkt
 
 ---
@@ -212,19 +212,19 @@ Nu bij elke `git push` naar `main`:
 
 #### GoDaddy
 1. Log in op GoDaddy
-2. Ga naar My Products → DNS
-3. Add → CNAME:
+2. Ga naar My Products â†’ DNS
+3. Add â†’ CNAME:
    - Host: iou
    - Points to: jouw-app.azurestaticapps.net
    - TTL: 1 hour
-4. Add → TXT:
+4. Add â†’ TXT:
    - Host: _dnsauth.iou
    - TXT Value: [Azure validatie token]
    - TTL: 1 hour
 
 #### TransIP
 1. Log in op TransIP
-2. Selecteer domein → DNS
+2. Selecteer domein â†’ DNS
 3. Nieuwe record:
    - Type: CNAME
    - Naam: iou
@@ -297,7 +297,7 @@ openssl s_client -connect iou.open-regels.nl:443 -servername iou.open-regels.nl
    # Moet je validatie token tonen
    ```
 2. Wacht langer - DNS propagatie kan tot 24 uur duren
-3. Check of Azure validatie succesvol was in Portal → Custom domains
+3. Check of Azure validatie succesvol was in Portal â†’ Custom domains
 
 ### Probleem: Site toont 404
 
@@ -316,7 +316,7 @@ openssl s_client -connect iou.open-regels.nl:443 -servername iou.open-regels.nl
    <script src="app.js"></script>
    ```
 2. Check browser console voor 404 errors
-3. Verify files zijn meegenomen in deployment (check Azure Portal → Files)
+3. Verify files zijn meegenomen in deployment (check Azure Portal â†’ Files)
 
 ---
 
@@ -329,9 +329,9 @@ openssl s_client -connect iou.open-regels.nl:443 -servername iou.open-regels.nl
 - Gratis custom domain
 - Unlimited static content
 
-Voor deze demonstrator = **€0,00 per maand**
+Voor deze demonstrator = **â‚¬0,00 per maand**
 
-Als je meer nodig hebt, upgrade naar Standard tier (€8/maand).
+Als je meer nodig hebt, upgrade naar Standard tier (â‚¬8/maand).
 
 ---
 
@@ -339,7 +339,7 @@ Als je meer nodig hebt, upgrade naar Standard tier (€8/maand).
 
 ### Optie 1: Azure Application Insights (Gratis tier)
 
-1. In Azure Portal → je Static Web App
+1. In Azure Portal â†’ je Static Web App
 2. Klik "Application Insights" in menu
 3. Enable Application Insights
 4. Bekijk:
@@ -349,7 +349,7 @@ Als je meer nodig hebt, upgrade naar Standard tier (€8/maand).
 
 ### Optie 2: Google Analytics
 
-Voeg toe aan `index.html` vóór `</head>`:
+Voeg toe aan `index.html` vÃ³Ã³r `</head>`:
 ```html
 <!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
@@ -402,4 +402,4 @@ Voor vragen over het project:
 
 ---
 
-**Succes met de deployment! 🚀**
+**Succes met de deployment! ðŸš€**

@@ -1,4 +1,4 @@
-# 🚀 Quick Start Guide
+# ðŸš€ Quick Start Guide
 
 ## Onmiddellijke Acties (< 5 minuten)
 
@@ -32,11 +32,11 @@ python3 -m http.server 8000
 1. Klik op eerste tab (al actief)
 2. Bekijk de 4 summary cards
 3. Probeer filters:
-   - Wegvak → "Laan van Nieuw Land"
-   - Status → "In behandeling"
+   - Wegvak â†’ "Laan van Nieuw Land"
+   - Status â†’ "In behandeling"
 4. Klik "Details" bij een requirement
 
-#### Jurisdictionele Coördinatie
+#### Jurisdictionele CoÃ¶rdinatie
 1. Klik tweede tab
 2. Toggle kaartlagen aan/uit
 3. Scroll naar "Overlap Analyse"
@@ -67,7 +67,7 @@ python3 -m http.server 8000
 2. **Azure Portal** (10 min):
    - Log in: https://portal.azure.com
    - Klik "+ Create a resource"
-   - Zoek "Static Web App" → Create
+   - Zoek "Static Web App" â†’ Create
    - Vul in:
      * Name: `lelystad-ringweg-demo`
      * Region: West Europe
@@ -81,7 +81,7 @@ python3 -m http.server 8000
    - Wacht op deployment (1-2 min)
    - Kopieer URL (bijv. `happy-stone-abc123.azurestaticapps.net`)
    - Open in browser
-   - ✅ Klaar!
+   - âœ… Klaar!
 
 #### Optie B: Via Azure CLI (5 minuten)
 
@@ -116,13 +116,13 @@ Value: [jouw-azure-url].azurestaticapps.net
 
 Type: TXT  
 Name: _dnsauth.iou
-Value: [krijg je van Azure Portal → Custom domains]
+Value: [krijg je van Azure Portal â†’ Custom domains]
 ```
 
 #### In Azure Portal
 
-1. Static Web App → Custom domains
-2. "+ Add" → Custom domain on other DNS
+1. Static Web App â†’ Custom domains
+2. "+ Add" â†’ Custom domain on other DNS
 3. Voer in: `iou.open-regels.nl`
 4. Kopieer de TXT record
 5. Voeg toe bij DNS provider
@@ -131,30 +131,30 @@ Value: [krijg je van Azure Portal → Custom domains]
 
 ---
 
-## 📊 Verwachte Resultaten
+## ðŸ“Š Verwachte Resultaten
 
 ### Lokaal
-✅ Drie werkende tabs  
-✅ 19 requirements in tabel  
-✅ Filters werken  
-✅ Graph visualiseert relaties  
-✅ Geen console errors
+âœ… Drie werkende tabs  
+âœ… 19 requirements in tabel  
+âœ… Filters werken  
+âœ… Graph visualiseert relaties  
+âœ… Geen console errors
 
 ### Azure Deployment  
-✅ Site bereikbaar via Azure URL  
-✅ HTTPS automatisch actief  
-✅ Alle functionaliteit werkt  
-✅ Snelle laadtijd (<1 sec)
+âœ… Site bereikbaar via Azure URL  
+âœ… HTTPS automatisch actief  
+âœ… Alle functionaliteit werkt  
+âœ… Snelle laadtijd (<1 sec)
 
 ### Custom Domain
-✅ iou.open-regels.nl bereikbaar  
-✅ Automatisch HTTPS certificaat  
-✅ Redirects van HTTP → HTTPS  
-✅ Wereldwijd beschikbaar
+âœ… iou.open-regels.nl bereikbaar  
+âœ… Automatisch HTTPS certificaat  
+âœ… Redirects van HTTP â†’ HTTPS  
+âœ… Wereldwijd beschikbaar
 
 ---
 
-## 🐛 Troubleshooting
+## ðŸ› Troubleshooting
 
 ### "python3: command not found"
 ```bash
@@ -186,7 +186,7 @@ nslookup iou.open-regels.nl
 
 ---
 
-## 📞 Hulp Nodig?
+## ðŸ“ž Hulp Nodig?
 
 **Documentatie**:
 - Zie `README.md` voor project overview
@@ -199,7 +199,7 @@ nslookup iou.open-regels.nl
 
 ---
 
-## ✨ Volgende Stappen
+## âœ¨ Volgende Stappen
 
 Na succesvolle deployment:
 
@@ -207,7 +207,7 @@ Na succesvolle deployment:
    ```
    "Kijk naar onze nieuwe demonstrator: https://iou.open-regels.nl
    
-   Dit toont hoe we compliance, coördinatie en kennisbeheer 
+   Dit toont hoe we compliance, coÃ¶rdinatie en kennisbeheer 
    kunnen integreren voor het Ringweg project."
    ```
 
@@ -223,6 +223,6 @@ Na succesvolle deployment:
 
 ---
 
-**Je bent klaar om te starten! 🎉**
+**Je bent klaar om te starten! ðŸŽ‰**
 
 Succes met je demonstrator!
