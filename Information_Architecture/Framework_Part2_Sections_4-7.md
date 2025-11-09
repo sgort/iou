@@ -13,7 +13,7 @@
 
 - **[Part 1](./Framework_Part%201_Sections_1-3.md)**: Sections 1-3 (Ontology, Standards, Concepts)
 - **Part 2** (this document): Sections 4-7 (Information Model, Process, Roles, Demonstrator)
-- **Part 3**: Sections 8-10 (Roadmap, Metrics, Next Steps)
+- **[Part 3](./Framework_Part3_Sections_8-10.md)**: Sections 8-10 (Roadmap, Metrics, Next Steps)
 
 ---
 

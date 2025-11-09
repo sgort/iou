@@ -758,8 +758,8 @@ _Continue to [Part 2 for Sections 4-7...](./Framework_Part2_Sections_4-7.md)_
 
 **Document Structure:**
 - **Part 1** (this file): Sections 1-3 (Ontology, Standards, Concepts)
-- **Part 2**: Sections 4-7 (Information Model, Process, Roles, Demonstrator)
-- **Part 3**: Sections 8-10 (Roadmap, Metrics, Next Steps)
+- **[Part 2](./Framework_Part2_Sections_4-7.md)**: Sections 4-7 (Information Model, Process, Roles, Demonstrator)
+- **[Part 3](./Framework_Part3_Sections_8-10.md)**: Sections 8-10 (Roadmap, Metrics, Next Steps)
 
 ---
 
