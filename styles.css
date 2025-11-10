@@ -453,10 +453,28 @@ body {
 
 /* Map container */
 .map-container {
-    min-height: 500px;
+    min-height: 600px;
     background-color: var(--color-background);
     border-radius: var(--radius-lg);
     overflow: hidden;
+    position: relative;
+}
+
+#leaflet-map {
+    height: 600px;
+    width: 100%;
+    border-radius: var(--radius-lg);
+    z-index: 1;
+}
+
+/* Leaflet popup customization */
+.leaflet-popup-content-wrapper {
+    border-radius: var(--radius-md);
+    font-family: var(--font-family);
+}
+
+.leaflet-popup-content {
+    font-size: var(--font-size-sm);
 }
 
 .map-placeholder {

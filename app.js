@@ -48,6 +48,15 @@ class LelystadDemo {
         document.getElementById(`${viewName}-view`).classList.add('active');
         
         this.currentView = viewName;
+        
+        // Initialize or refresh the map when switching to jurisdictional view
+        if (viewName === 'jurisdictional') {
+            console.log('[V6] Switched to jurisdictional view, initializing map...');
+            // Use setTimeout to ensure the view is fully visible before initializing
+            setTimeout(() => {
+                this.initializeLeafletMap();
+            }, 50);
+        }
     }
     
     // USE CASE A: COMPLIANCE DASHBOARD
@@ -192,10 +201,193 @@ class LelystadDemo {
     // USE CASE C: JURISDICTIONAL COORDINATION
     renderJurisdictionalView() {
         this.setupLayerControls();
-        // Initial map render with default layers
-        this.updateMapVisualization();
+        // DON'T initialize map here - wait until view is active
+        // this.initializeLeafletMap();
         // Render overlap analysis AFTER checkboxes are set up
         this.renderOverlapAnalysis();
+    }
+    
+    initializeLeafletMap() {
+        // Only initialize once
+        if (this.map) {
+            console.log('[V6] Map already exists, invalidating size...');
+            // Fix: Invalidate size when switching back to this view
+            setTimeout(() => {
+                this.map.invalidateSize();
+                console.log('[V6] Map size invalidated');
+            }, 100);
+            this.updateMapLayers();
+            return;
+        }
+        
+        console.log('[V6] Initializing Leaflet map...');
+        
+        // Lelystad coordinates (approximate center between the two road sections)
+        const lelystadCenter = [52.5085, 5.4750];
+        
+        // Initialize map
+        this.map = L.map('leaflet-map', {
+            center: lelystadCenter,
+            zoom: 13,
+            zoomControl: true
+        });
+        
+        // Add OpenStreetMap base layer
+        this.baseLayers = {
+            osm: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors',
+                maxZoom: 19
+            }),
+            satellite: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                attribution: '© Esri',
+                maxZoom: 19
+            })
+        };
+        
+        // Add default base layer (satellite to match your screenshot)
+        this.baseLayers.satellite.addTo(this.map);
+        
+        // Initialize layer groups
+        this.mapLayers = {
+            provincial: L.layerGroup(),
+            municipal: L.layerGroup(),
+            nnn: L.layerGroup(),
+            natura2000: L.layerGroup(),
+            protected: L.layerGroup()
+        };
+        
+        // Add mock road data (we'll replace this with real GeoJSON later)
+        this.addMockRoadData();
+        
+        // Update layers based on current checkbox states
+        this.updateMapLayers();
+        
+        // Add scale control
+        L.control.scale({
+            imperial: false,
+            metric: true
+        }).addTo(this.map);
+        
+        // Add layer control
+        L.control.layers(
+            {
+                'Satelliet': this.baseLayers.satellite,
+                'OpenStreetMap': this.baseLayers.osm
+            },
+            null,
+            { position: 'topright' }
+        ).addTo(this.map);
+        
+        console.log('[V7] Leaflet map initialized');
+    }
+    
+    addMockRoadData() {
+        // Provincial road: Laan van Nieuw Land (blue)
+        const laanNieuwLand = L.polyline([
+            [52.5200, 5.4600],
+            [52.5150, 5.4700],
+            [52.5100, 5.4800],
+            [52.5050, 5.4900]
+        ], {
+            color: '#01689B',
+            weight: 6,
+            opacity: 0.8
+        }).bindPopup('<strong>Laan van Nieuw Land</strong><br>Provinciale weg<br>Lengte: 4.2 km');
+        
+        // Municipal road: Verlengde Westerdreef (orange)
+        const verlendeWesterdreef = L.polyline([
+            [52.5050, 5.4900],
+            [52.5020, 5.4950],
+            [52.4980, 5.5000]
+        ], {
+            color: '#F39200',
+            weight: 6,
+            opacity: 0.8
+        }).bindPopup('<strong>Verlengde Westerdreef</strong><br>Gemeentelijke weg<br>Lengte: 2.1 km');
+        
+        // NNN Corridor (green polygon)
+        const nnnCorridor = L.polygon([
+            [52.5180, 5.4650],
+            [52.5120, 5.4750],
+            [52.5080, 5.4850],
+            [52.5060, 5.4920],
+            [52.5040, 5.4860],
+            [52.5080, 5.4760],
+            [52.5140, 5.4660]
+        ], {
+            color: '#39870C',
+            fillColor: '#E8F8E8',
+            fillOpacity: 0.4,
+            weight: 3
+        }).bindPopup('<strong>NNN Corridor</strong><br>Natuurnetwerk Nederland<br>Beschermde ecologische zone');
+        
+        // Natura 2000 area (teal)
+        const natura2000Area = L.circle([52.5000, 5.5050], {
+            radius: 400,
+            color: '#7FCDBB',
+            fillColor: '#D5F4E6',
+            fillOpacity: 0.3,
+            weight: 3
+        }).bindPopup('<strong>Natura 2000 Gebied</strong><br>EU beschermd natuurgebied');
+        
+        // Protected species habitat (yellow)
+        const protectedHabitat = L.circle([52.5150, 5.4620], {
+            radius: 300,
+            color: '#FFD700',
+            fillColor: '#FFF9E6',
+            fillOpacity: 0.3,
+            weight: 3
+        }).bindPopup('<strong>Beschermde Soorten Habitat</strong><br>Vleermuizen leefgebied');
+        
+        // Add to layer groups
+        this.mapLayers.provincial.addLayer(laanNieuwLand);
+        this.mapLayers.municipal.addLayer(verlendeWesterdreef);
+        this.mapLayers.nnn.addLayer(nnnCorridor);
+        this.mapLayers.natura2000.addLayer(natura2000Area);
+        this.mapLayers.protected.addLayer(protectedHabitat);
+        
+        // Add junction marker
+        const junction = L.marker([52.5050, 5.4900], {
+            icon: L.divIcon({
+                className: 'junction-marker',
+                html: '<div style="background: #D52B1E; width: 16px; height: 16px; border-radius: 50%; border: 3px solid white;"></div>',
+                iconSize: [22, 22],
+                iconAnchor: [11, 11]
+            })
+        }).bindPopup('<strong>Knooppunt</strong><br>Overgang provinciaal-gemeentelijk');
+        
+        // Add junction to both provincial and municipal layers
+        this.mapLayers.provincial.addLayer(junction);
+    }
+    
+    updateMapLayers() {
+        if (!this.map) return;
+        
+        console.log('[V7] Updating map layers...');
+        
+        // Get active layers from checkboxes
+        const activeLayers = {
+            provincial: document.querySelector('[data-layer="provincial"]')?.checked || false,
+            municipal: document.querySelector('[data-layer="municipal"]')?.checked || false,
+            nnn: document.querySelector('[data-layer="nnn"]')?.checked || false,
+            natura2000: document.querySelector('[data-layer="natura2000"]')?.checked || false,
+            protected: document.querySelector('[data-layer="protected"]')?.checked || false
+        };
+        
+        // Add or remove layers based on checkbox state
+        Object.keys(activeLayers).forEach(layerName => {
+            if (activeLayers[layerName]) {
+                if (!this.map.hasLayer(this.mapLayers[layerName])) {
+                    this.mapLayers[layerName].addTo(this.map);
+                    console.log(`[V7] Added ${layerName} layer to map`);
+                }
+            } else {
+                if (this.map.hasLayer(this.mapLayers[layerName])) {
+                    this.map.removeLayer(this.mapLayers[layerName]);
+                    console.log(`[V7] Removed ${layerName} layer from map`);
+                }
+            }
+        });
     }
     
     setupLayerControls() {
@@ -221,22 +413,25 @@ class LelystadDemo {
     }
     
     toggleMapLayer(layer, visible) {
-        console.log(`[V5] Layer ${layer} ${visible ? 'enabled' : 'disabled'}`);
+        console.log(`[V7] Layer ${layer} ${visible ? 'enabled' : 'disabled'}`);
         
         try {
             // Update the map visualization based on layer toggles
-            console.log('[V5] Updating map visualization...');
-            this.updateMapVisualization();
+            console.log('[V7] Updating map layers...');
+            this.updateMapLayers();
             
             // Update overlap analysis to show only relevant overlaps
-            console.log('[V5] Calling renderOverlapAnalysis...');
+            console.log('[V7] Calling renderOverlapAnalysis...');
             this.renderOverlapAnalysis();
-            console.log('[V5] renderOverlapAnalysis completed');
+            console.log('[V7] renderOverlapAnalysis completed');
         } catch (error) {
-            console.error('[V5] Error in toggleMapLayer:', error);
+            console.error('[V7] Error in toggleMapLayer:', error);
         }
     }
     
+    // OLD SVG-BASED MAP VISUALIZATION (Replaced by Leaflet)
+    // Kept for reference in case we need to revert
+    /*
     updateMapVisualization() {
         const layers = {
             provincial: document.querySelector('[data-layer="provincial"]').checked,
@@ -253,103 +448,23 @@ class LelystadDemo {
                 <svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
         `;
         
-        // Provincial section
-        if (layers.provincial) {
-            svg += `
-                <rect x="50" y="50" width="200" height="300" fill="#E8F4F8" stroke="#01689B" stroke-width="3" rx="5"/>
-                <text x="150" y="90" font-size="16" font-weight="600" text-anchor="middle" fill="#01689B">Provinciaal</text>
-                <text x="150" y="115" font-size="14" text-anchor="middle" fill="#154273">Laan van Nieuw Land</text>
-            `;
-        }
-        
-        // Municipal section
-        if (layers.municipal) {
-            svg += `
-                <rect x="350" y="50" width="200" height="300" fill="#FFF4E8" stroke="#F39200" stroke-width="3" rx="5"/>
-                <text x="450" y="90" font-size="16" font-weight="600" text-anchor="middle" fill="#F39200">Gemeentelijk</text>
-                <text x="450" y="115" font-size="14" text-anchor="middle" fill="#D97700">Verlengde Westerdreef</text>
-            `;
-        }
-        
-        // NNN Corridor overlay
-        if (layers.nnn) {
-            svg += `
-                <rect x="180" y="120" width="240" height="80" fill="#E8F8E8" stroke="#39870C" stroke-width="3" opacity="0.85" rx="5"/>
-                <text x="300" y="160" font-size="14" font-weight="600" text-anchor="middle" fill="#39870C">NNN Corridor</text>
-                <text x="300" y="180" font-size="12" text-anchor="middle" fill="#2A6709">Overlap Zone</text>
-            `;
-        }
-        
-        // Natura 2000 area
-        if (layers.natura2000) {
-            svg += `
-                <ellipse cx="450" cy="280" rx="100" ry="60" fill="#D5F4E6" stroke="#7FCDBB" stroke-width="3" opacity="0.7" rx="5"/>
-                <text x="450" y="285" font-size="13" font-weight="600" text-anchor="middle" fill="#3BA886">Natura 2000</text>
-            `;
-        }
-        
-        // Protected species habitat
-        if (layers.protected) {
-            svg += `
-                <polygon points="150,250 180,280 150,310 120,280" fill="#FFF9E6" stroke="#FFD700" stroke-width="3" opacity="0.8"/>
-                <text x="150" y="285" font-size="11" font-weight="600" text-anchor="middle" fill="#CC9900">Habitat</text>
-            `;
-        }
-        
-        // Connection point (always visible if both boundaries shown)
-        if (layers.provincial && layers.municipal) {
-            svg += `
-                <circle cx="250" cy="200" r="8" fill="#D52B1E" stroke="white" stroke-width="2"/>
-                <text x="300" y="250" font-size="12" text-anchor="middle" fill="#767676">Knooppunt</text>
-            `;
-        }
-        
-        // Legend
-        svg += `
-            <g transform="translate(50, 370)">
-        `;
-        
-        if (layers.provincial) {
-            svg += `
-                <rect x="0" y="0" width="20" height="15" fill="#01689B"/>
-                <text x="25" y="12" font-size="11" fill="#2C2C2C">Provincie Flevoland</text>
-            `;
-        }
-        
-        if (layers.municipal) {
-            svg += `
-                <rect x="180" y="0" width="20" height="15" fill="#F39200"/>
-                <text x="205" y="12" font-size="11" fill="#2C2C2C">Gemeente Lelystad</text>
-            `;
-        }
-        
-        if (layers.nnn || layers.natura2000 || layers.protected) {
-            svg += `
-                <rect x="360" y="0" width="20" height="15" fill="#39870C" opacity="0.7"/>
-                <text x="385" y="12" font-size="11" fill="#2C2C2C">Ecologische Zones</text>
-            `;
-        }
-        
-        svg += `
-            </g>
-                </svg>
-                <p class="map-caption">Conceptuele weergave van jurisdictionele grenzen en overlap zones</p>
-            </div>
-        `;
+        // ... (all the SVG code)
         
         mapContainer.innerHTML = svg;
     }
+    */
+    
     
     renderOverlapAnalysis() {
-        console.log('[V5] === renderOverlapAnalysis START ===');
+        console.log('[V7] === renderOverlapAnalysis START ===');
         const container = document.getElementById('overlap-analysis');
         
         if (!container) {
-            console.error('[V5] overlap-analysis container not found!');
+            console.error('[V7] overlap-analysis container not found!');
             return;
         }
         
-        console.log('[V5] Container found:', container);
+        console.log('[V7] Container found:', container);
         
         try {
             // Get current active layers - explicitly get checkboxes
@@ -877,6 +992,6 @@ let demo;
 document.addEventListener('DOMContentLoaded', () => {
     demo = new LelystadDemo();
     window.demo = demo; // Make globally accessible for debugging
-    console.log('[V5] Lelystad Ringweg Demonstrator geladen');
-    console.log('[V5] Demo object:', demo);
+    console.log('[V7] Lelystad Ringweg Demonstrator geladen');
+    console.log('[V7] Demo object:', demo);
 });

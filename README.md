@@ -2,7 +2,7 @@
 
 Een statische web-demonstrator die de voorgestelde informatiearsitectuur visualiseert voor het Lelystad-Zuid Ringweg project.
 
-## 🎯 Doel
+## ðŸŽ¯ Doel
 
 Deze demonstrator toont hoe een semantic web-gebaseerde informatiearsitectuur provinciale infrastructuurprojecten kan ondersteunen door:
 
@@ -10,7 +10,7 @@ Deze demonstrator toont hoe een semantic web-gebaseerde informatiearsitectuur pr
 - **Cross-jurisdictional coordination** met geospatiale visualisatie
 - **Knowledge graph exploration** voor semantische navigatie
 
-## 🏗️ Architectuur Basis
+## ðŸ—ï¸ Architectuur Basis
 
 De demonstrator is gebouwd volgens:
 - **MIM** (Metamodel voor Informatie Modellering)
@@ -18,7 +18,7 @@ De demonstrator is gebouwd volgens:
 - **CPSV-AP/CPRMV** (EU Public Service Vocabularies)
 - **NL Design System** (Nederlandse overheids-UX standaarden)
 
-## 📋 Use Cases
+## ðŸ“‹ Use Cases
 
 ### Use Case A: Compliance Dashboard
 Toont alle uitvoerbare eisen per wegvak met:
@@ -27,21 +27,21 @@ Toont alle uitvoerbare eisen per wegvak met:
 - Deadline tracking
 - Filtering op domein/status/wegvak
 
-### Use Case C: Jurisdictionele Coördinatie
+### Use Case C: Jurisdictionele CoÃ¶rdinatie
 Visualiseert:
 - Provinciale vs. gemeentelijke grenzen
 - Ecologische zones (NNN, Natura 2000)
-- Overlap-analyses met coördinatievereisten
+- Overlap-analyses met coÃ¶rdinatievereisten
 - Interactieve kaartlagen
 
 ### Use Case E: Knowledge Graph Verkenner
 Navigatie door:
 - Semantische relaties tussen concepten
-- Van werkprotocol → regelgeving → verantwoordelijken
-- RDF/SKOS concept hiërarchieën
+- Van werkprotocol â†’ regelgeving â†’ verantwoordelijken
+- RDF/SKOS concept hiÃ«rarchieÃ«n
 - SPARQL queries voor elk pad
 
-## 🚀 Deployment naar Azure Static Web Apps
+## ðŸš€ Deployment naar Azure Static Web Apps
 
 ### Vereisten
 - Azure account met actieve subscription
@@ -64,7 +64,7 @@ git push -u origin main
 #### Via Azure Portal:
 
 1. Ga naar [portal.azure.com](https://portal.azure.com)
-2. Klik "+ Create a resource" → "Static Web App"
+2. Klik "+ Create a resource" â†’ "Static Web App"
 3. Vul in:
    - **Subscription**: Kies je subscription
    - **Resource Group**: Maak nieuwe of selecteer bestaande
@@ -82,7 +82,7 @@ git push -u origin main
    - Api location: (leeg laten)
    - Output location: (leeg laten)
 
-5. Klik "Review + create" → "Create"
+5. Klik "Review + create" â†’ "Create"
 
 Azure zal automatisch een GitHub Actions workflow aanmaken.
 
@@ -134,19 +134,19 @@ Value: [validation-token-from-azure]
 
 Azure Static Web Apps voorziet automatisch van gratis SSL certificaten via Let's Encrypt zodra het custom domain is geverifieerd.
 
-## 📁 Project Structuur
+## ðŸ“ Project Structuur
 
 ```
 lelystad-demo/
-├── index.html          # Hoofd HTML met alle drie views
-├── styles.css          # NL Design System geïnspireerde CSS
-├── app.js             # Applicatie logica en interactie
-├── data.js            # Mock data (requirements, overlaps, graph)
-├── staticwebapp.config.json  # Azure SWA configuratie
-└── README.md          # Deze file
+â”œâ”€â”€ index.html          # Hoofd HTML met alle drie views
+â”œâ”€â”€ styles.css          # NL Design System geÃ¯nspireerde CSS
+â”œâ”€â”€ app.js             # Applicatie logica en interactie
+â”œâ”€â”€ data.js            # Mock data (requirements, overlaps, graph)
+â”œâ”€â”€ staticwebapp.config.json  # Azure SWA configuratie
+â””â”€â”€ README.md          # Deze file
 ```
 
-## 🛠️ Lokale Development
+## ðŸ› ï¸ Lokale Development
 
 ### Quick Start
 ```bash
@@ -175,7 +175,7 @@ npm run deploy   # Info: deployment via GitHub Actions
 open index.html
 ```
 
-## 🔄 Updates Deployen
+## ðŸ”„ Updates Deployen
 
 Elke push naar de `main` branch triggert automatisch een nieuwe deployment:
 
@@ -187,7 +187,7 @@ git push origin main
 
 GitHub Actions zal automatisch builden en deployen naar Azure.
 
-## 📊 Mock Data
+## ðŸ“Š Mock Data
 
 De demonstrator bevat representatieve mock data:
 - **19 requirements** verdeeld over 2 wegvakken
@@ -195,7 +195,7 @@ De demonstrator bevat representatieve mock data:
 - **3 jurisdictional overlaps** tussen provincie en gemeente
 - **20+ knowledge graph nodes** met semantische relaties
 
-## 🎨 NL Design System Compliance
+## ðŸŽ¨ NL Design System Compliance
 
 De UI volgt Nederlandse overheids-richtlijnen:
 - Toegankelijkheid (WCAG 2.1 AA)
@@ -204,7 +204,7 @@ De UI volgt Nederlandse overheids-richtlijnen:
 - Responsive design
 - Focus states voor keyboard navigatie
 
-## 🔮 Toekomstige Extensies
+## ðŸ”® Toekomstige Extensies
 
 Voor productie-implementatie zou deze demo uitgebreid worden met:
 - TriplyDB SPARQL endpoint integratie
@@ -214,11 +214,11 @@ Voor productie-implementatie zou deze demo uitgebreid worden met:
 - Real-time updates via WebSockets
 - Export functionaliteit (RDF/Turtle, CSV)
 
-## 📝 Licentie
+## ðŸ“ Licentie
 
 Dit is een demonstrator voor Provincie Flevoland. Niet voor productiegebruik.
 
-## 👥 Contact
+## ðŸ‘¥ Contact
 
 Voor vragen over deze demonstrator:
 - **Project**: Lelystad-Zuid Ringweg
@@ -227,6 +227,6 @@ Voor vragen over deze demonstrator:
 
 ---
 
-**Status**: 🚧 Demonstrator - Niet voor productiegebruik
+**Status**: ðŸš§ Demonstrator - Niet voor productiegebruik
 **Laatste update**: November 2024
 **Versie**: 1.0.0
