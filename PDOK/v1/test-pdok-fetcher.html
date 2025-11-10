@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDOK Road Data Fetcher - Test Page</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        #map { height: 500px; width: 100%; margin: 20px 0; border: 2px solid #01689B; }
+        .controls { background: #f5f5f5; padding: 15px; margin-bottom: 20px; border-radius: 5px; }
+        button { background: #01689B; color: white; border: none; padding: 10px 20px; margin: 5px; cursor: pointer; border-radius: 3px; }
+        button:hover { background: #154273; }
+        #output { background: #f9f9f9; padding: 15px; border: 1px solid #ddd; border-radius: 3px; max-height: 400px; overflow-y: auto; font-family: monospace; font-size: 12px; white-space: pre-wrap; }
+        .status { padding: 10px; margin: 10px 0; border-radius: 3px; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+    </style>
+</head>
+<body>
+    <h1>🗺️ PDOK Road Data Fetcher for Lelystad Ringweg</h1>
+    
+    <div class="controls">
+        <h3>Fetch Real Road Data</h3>
+        <button onclick="fetchLaanVanNieuwLand()">Fetch: Laan van Nieuw Land</button>
+        <button onclick="fetchWesterdreef()">Fetch: Westerdreef</button>
+        <button onclick="fetchBoundingBox()">Fetch: All Roads (Bbox)</button>
+        <button onclick="clearMap()">Clear Map</button>
+        <button onclick="exportData()">💾 Export GeoJSON</button>
+    </div>
+
+    <div id="status"></div>
+
+    <div id="map"></div>
+
+    <h3>API Response Data:</h3>
+    <div id="output">No data fetched yet. Click a button above to fetch road data from PDOK.</div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Initialize map centered on Lelystad
+        const map = L.map('map').setView([52.5085, 5.4750], 13);
+
+        // Add base layers
+        const satelliteLayer = L.tileLayer(
+            'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+            { attribution: 'Esri', maxZoom: 19 }
+        );
+
+        const osmLayer = L.tileLayer(
+            'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+            { attribution: '© OpenStreetMap' }
+        ).addTo(map);
+
+        L.control.layers({
+            'OpenStreetMap': osmLayer,
+            'Satellite': satelliteLayer
+        }).addTo(map);
+
+        L.control.scale().addTo(map);
+
+        // Layer groups for different roads
+        const roadLayers = {
+            laan: L.layerGroup().addTo(map),
+            westerdreef: L.layerGroup().addTo(map),
+            bbox: L.layerGroup().addTo(map)
+        };
+
+        // Store fetched data
+        let fetchedData = {
+            laanVanNieuwLand: null,
+            westerdreef: null,
+            boundingBox: null
+        };
+
+        // PDOK WFS endpoint
+        const WFS_BASE = 'https://service.pdok.nl/rws/nwbwegen/wfs/v1_0';
+
+        // Status message helper
+        function showStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+
+        // Build WFS URL
+        function buildWFSUrl(params) {
+            const queryString = Object.entries(params)
+                .map(([key, val]) => `${encodeURIComponent(key)}=${encodeURIComponent(val)}`)
+                .join('&');
+            return `${WFS_BASE}?${queryString}`;
+        }
+
+        // Fetch from WFS
+        async function fetchWFS(params) {
+            const url = buildWFSUrl(params);
+            console.log('Fetching:', url);
+            showStatus(`Fetching data from PDOK...`, 'info');
+
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                const data = await response.json();
+                showStatus(`✓ Success! Received ${data.features?.length || 0} features`, 'success');
+                return data;
+            } catch (error) {
+                showStatus(`✗ Error: ${error.message}`, 'error');
+                throw error;
+            }
+        }
+
+        // Fetch Laan van Nieuw Land
+        async function fetchLaanVanNieuwLand() {
+            const params = {
+                service: 'WFS',
+                version: '2.0.0',
+                request: 'GetFeature',
+                typeName: 'nwbwegen:wegvakken',
+                outputFormat: 'application/json',
+                CQL_FILTER: `STR ILIKE '%Laan van Nieuw Land%'`,
+                srsName: 'EPSG:4326',
+                count: 100
+            };
+
+            try {
+                const data = await fetchWFS(params);
+                fetchedData.laanVanNieuwLand = data;
+                displayData(data, 'Laan van Nieuw Land');
+                addRoadsToMap(data, roadLayers.laan, '#01689B', 'Laan van Nieuw Land');
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        // Fetch Westerdreef
+        async function fetchWesterdreef() {
+            const params = {
+                service: 'WFS',
+                version: '2.0.0',
+                request: 'GetFeature',
+                typeName: 'nwbwegen:wegvakken',
+                outputFormat: 'application/json',
+                CQL_FILTER: `STR ILIKE '%Westerdreef%'`,
+                srsName: 'EPSG:4326',
+                count: 100
+            };
+
+            try {
+                const data = await fetchWFS(params);
+                fetchedData.westerdreef = data;
+                displayData(data, 'Westerdreef');
+                addRoadsToMap(data, roadLayers.westerdreef, '#F39200', 'Westerdreef');
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        // Fetch all roads in bounding box
+        async function fetchBoundingBox() {
+            const params = {
+                service: 'WFS',
+                version: '2.0.0',
+                request: 'GetFeature',
+                typeName: 'nwbwegen:wegvakken',
+                outputFormat: 'application/json',
+                srsName: 'EPSG:4326',
+                bbox: '5.45,52.49,5.52,52.52,EPSG:4326',
+                count: 500
+            };
+
+            try {
+                const data = await fetchWFS(params);
+                fetchedData.boundingBox = data;
+                displayData(data, 'Bounding Box Roads');
+                
+                // Show unique street names
+                const streets = [...new Set(data.features
+                    .map(f => f.properties.STR)
+                    .filter(s => s))]
+                    .sort()
+                    .slice(0, 30);
+                console.log('Streets in bbox:', streets);
+                
+                addRoadsToMap(data, roadLayers.bbox, '#767676', 'Other Roads', 2);
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        // Display fetched data in output div
+        function displayData(geoJson, label) {
+            const output = document.getElementById('output');
+            const formatted = JSON.stringify(geoJson, null, 2);
+            output.textContent = `=== ${label} ===\nFeatures: ${geoJson.features.length}\n\n${formatted}`;
+        }
+
+        // Add roads to map
+        function addRoadsToMap(geoJson, layerGroup, color, name, weight = 5) {
+            layerGroup.clearLayers();
+
+            if (!geoJson || !geoJson.features) return;
+
+            L.geoJSON(geoJson, {
+                style: {
+                    color: color,
+                    weight: weight,
+                    opacity: 0.7
+                },
+                onEachFeature: (feature, layer) => {
+                    const props = feature.properties;
+                    layer.bindPopup(`
+                        <strong>${props.STR || 'Unnamed Road'}</strong><br>
+                        ${props.WEGBEHSRT ? `Beheer: ${props.WEGBEHSRT}<br>` : ''}
+                        ${props.WVK_ID ? `WVK ID: ${props.WVK_ID}<br>` : ''}
+                        <em>Bron: PDOK NWB</em>
+                    `);
+                }
+            }).addTo(layerGroup);
+
+            // Fit map to features if first layer
+            if (weight > 2) {
+                const bounds = layerGroup.getBounds();
+                if (bounds.isValid()) {
+                    map.fitBounds(bounds, { padding: [50, 50] });
+                }
+            }
+
+            console.log(`Added ${geoJson.features.length} features to ${name} layer`);
+        }
+
+        // Clear map
+        function clearMap() {
+            Object.values(roadLayers).forEach(layer => layer.clearLayers());
+            document.getElementById('output').textContent = 'Map cleared.';
+            showStatus('Map cleared', 'info');
+        }
+
+        // Export data
+        function exportData() {
+            const data = {
+                metadata: {
+                    source: 'PDOK Nationaal Wegen Bestand (NWB)',
+                    date: new Date().toISOString(),
+                    description: 'Road geometry for Lelystad Zuid Ring Road project'
+                },
+                roads: fetchedData
+            };
+
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'lelystad-roads-pdok.json';
+            a.click();
+            URL.revokeObjectURL(url);
+
+            showStatus('✓ Data exported to lelystad-roads-pdok.json', 'success');
+        }
+
+        // Auto-fetch on load (optional)
+        // window.addEventListener('load', () => {
+        //     fetchLaanVanNieuwLand();
+        //     setTimeout(fetchWesterdreef, 1000);
+        // });
+    </script>
+
+    <footer style="margin-top: 40px; padding: 20px; background: #f5f5f5; border-radius: 5px;">
+        <h3>Instructions:</h3>
+        <ol>
+            <li>Click the fetch buttons to retrieve real road data from PDOK</li>
+            <li>Roads will appear on the map with interactive popups</li>
+            <li>Check the output panel for raw GeoJSON data</li>
+            <li>Click "Export GeoJSON" to save the data as a file</li>
+            <li>Use the exported coordinates in your data.js file</li>
+        </ol>
+        <p><strong>Note:</strong> This requires internet access to PDOK WFS service. CORS may block requests - if so, run this on your deployed site or use a local server.</p>
+    </footer>
+</body>
+</html>

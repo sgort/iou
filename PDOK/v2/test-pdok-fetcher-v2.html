@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDOK Road Data Fetcher v2 - Enhanced</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 1400px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h1 { color: #01689B; margin: 0 0 10px 0; }
+        #map { height: 600px; width: 100%; margin: 20px 0; border: 2px solid #01689B; border-radius: 4px; }
+        .controls { background: #f5f5f5; padding: 15px; margin-bottom: 20px; border-radius: 5px; border: 1px solid #ddd; }
+        .button-row { margin-bottom: 10px; }
+        button { background: #01689B; color: white; border: none; padding: 10px 20px; margin: 5px; cursor: pointer; border-radius: 3px; font-size: 14px; }
+        button:hover { background: #154273; }
+        button.secondary { background: #767676; }
+        button.success { background: #39870C; }
+        button.danger { background: #D52B1E; }
+        button.warning { background: #F39200; }
+        #output { background: #f9f9f9; padding: 15px; border: 1px solid #ddd; border-radius: 3px; max-height: 400px; overflow-y: auto; font-family: 'Courier New', monospace; font-size: 11px; white-space: pre-wrap; }
+        .status { padding: 12px; margin: 10px 0; border-radius: 3px; font-weight: 500; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        .warning { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin: 15px 0; }
+        .stat-card { background: #f8f9fa; padding: 15px; border-radius: 4px; border-left: 4px solid #01689B; }
+        .stat-card h4 { margin: 0 0 5px 0; color: #01689B; font-size: 14px; }
+        .stat-card .value { font-size: 24px; font-weight: bold; color: #2c2c2c; }
+        .legend { background: white; padding: 10px; border-radius: 4px; border: 1px solid #ddd; }
+        .legend-item { display: flex; align-items: center; margin: 5px 0; }
+        .legend-color { width: 20px; height: 3px; margin-right: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🗺️ PDOK Road Data Fetcher for Lelystad Ringweg v2</h1>
+        <p style="color: #767676; margin: 5px 0 20px 0;">Enhanced version with better debugging and test mode</p>
+        
+        <div class="controls">
+            <h3 style="margin-top: 0;">1. Test Map Functionality</h3>
+            <div class="button-row">
+                <button onclick="testMapWithSampleData()" class="success">✓ Test Map (Sample Data)</button>
+                <button onclick="clearMap()" class="secondary">Clear Map</button>
+            </div>
+
+            <h3>2. Fetch Real PDOK Data</h3>
+            <div class="button-row">
+                <button onclick="fetchLaanVanNieuwLand()">📍 Laan van Nieuw Land</button>
+                <button onclick="fetchWesterdreef()" class="warning">📍 Westerdreef</button>
+                <button onclick="fetchBoundingBox()" class="secondary">📍 All Roads (Bbox)</button>
+            </div>
+
+            <h3>3. Export & Debug</h3>
+            <div class="button-row">
+                <button onclick="exportData()" class="success">💾 Export GeoJSON</button>
+                <button onclick="debugMap()" class="danger">🐛 Debug Info</button>
+                <button onclick="exportCoordinates()" class="warning">📋 Export Coordinates</button>
+            </div>
+        </div>
+
+        <div id="status"></div>
+
+        <div class="stats" id="stats" style="display: none;">
+            <div class="stat-card">
+                <h4>Features Loaded</h4>
+                <div class="value" id="stat-features">0</div>
+            </div>
+            <div class="stat-card">
+                <h4>On Map</h4>
+                <div class="value" id="stat-on-map">0</div>
+            </div>
+            <div class="stat-card">
+                <h4>Road Segments</h4>
+                <div class="value" id="stat-segments">0</div>
+            </div>
+        </div>
+
+        <div id="map"></div>
+
+        <div class="legend">
+            <strong>Legend:</strong>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #01689B;"></div>
+                <span>Laan van Nieuw Land (Provincial)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #F39200;"></div>
+                <span>Westerdreef (Municipal)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #767676;"></div>
+                <span>Other Roads (Bbox)</span>
+            </div>
+        </div>
+
+        <h3>API Response Data:</h3>
+        <div id="output">No data fetched yet. Click "Test Map" first to verify map is working, then fetch real data from PDOK.</div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        console.log('[PDOK Fetcher v2] Starting...');
+
+        // Initialize map centered on Lelystad
+        const map = L.map('map').setView([52.5085, 5.4750], 13);
+        console.log('[Map] Initialized at', map.getCenter());
+
+        // Add base layers
+        const satelliteLayer = L.tileLayer(
+            'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+            { attribution: 'Esri', maxZoom: 19 }
+        );
+
+        const osmLayer = L.tileLayer(
+            'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+            { attribution: '© OpenStreetMap' }
+        ).addTo(map);
+
+        L.control.layers({
+            'OpenStreetMap': osmLayer,
+            'Satellite': satelliteLayer
+        }).addTo(map);
+
+        L.control.scale().addTo(map);
+        console.log('[Map] Base layers and controls added');
+
+        // Layer groups for different roads
+        const roadLayers = {
+            laan: L.layerGroup().addTo(map),
+            westerdreef: L.layerGroup().addTo(map),
+            bbox: L.layerGroup().addTo(map),
+            test: L.layerGroup().addTo(map)
+        };
+        console.log('[Map] Layer groups created');
+
+        // Store fetched data
+        let fetchedData = {
+            laanVanNieuwLand: null,
+            westerdreef: null,
+            boundingBox: null
+        };
+
+        // PDOK WFS endpoint
+        const WFS_BASE = 'https://service.pdok.nl/rws/nwbwegen/wfs/v1_0';
+
+        // Status message helper
+        function showStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = `<div class="status ${type}">${message}</div>`;
+            console.log(`[Status] ${type.toUpperCase()}: ${message}`);
+        }
+
+        // Update stats
+        function updateStats() {
+            const statsDiv = document.getElementById('stats');
+            const totalFeatures = Object.values(fetchedData)
+                .filter(d => d && d.features)
+                .reduce((sum, d) => sum + d.features.length, 0);
+            
+            const onMapCount = Object.values(roadLayers)
+                .reduce((sum, layer) => sum + layer.getLayers().length, 0);
+
+            document.getElementById('stat-features').textContent = totalFeatures;
+            document.getElementById('stat-on-map').textContent = onMapCount;
+            document.getElementById('stat-segments').textContent = onMapCount;
+
+            statsDiv.style.display = totalFeatures > 0 ? 'grid' : 'none';
+        }
+
+        // Test map with sample data
+        function testMapWithSampleData() {
+            console.log('[Test] Adding sample data to verify map works...');
+            showStatus('Adding test data to verify map functionality...', 'info');
+
+            roadLayers.test.clearLayers();
+
+            // Sample coordinates near Lelystad
+            const testLine = L.polyline([
+                [52.5000, 5.4700],
+                [52.5050, 5.4750],
+                [52.5100, 5.4800],
+                [52.5150, 5.4850]
+            ], {
+                color: '#D52B1E',
+                weight: 5,
+                opacity: 0.8
+            }).addTo(roadLayers.test);
+
+            testLine.bindPopup('<strong>TEST LINE</strong><br>If you see this, the map is working!');
+
+            const testMarker = L.marker([52.5085, 5.4750]).addTo(roadLayers.test);
+            testMarker.bindPopup('<strong>Lelystad Center</strong><br>Test marker');
+
+            map.fitBounds(testLine.getBounds(), { padding: [50, 50] });
+
+            showStatus('✓ Test line and marker added! If you can see them, the map works correctly.', 'success');
+            console.log('[Test] Sample data added successfully');
+            updateStats();
+        }
+
+        // Build WFS URL
+        function buildWFSUrl(params) {
+            const queryString = Object.entries(params)
+                .map(([key, val]) => `${encodeURIComponent(key)}=${encodeURIComponent(val)}`)
+                .join('&');
+            return `${WFS_BASE}?${queryString}`;
+        }
+
+        // Fetch from WFS
+        async function fetchWFS(params) {
+            const url = buildWFSUrl(params);
+            console.log('[Fetch] URL:', url);
+            showStatus(`Fetching data from PDOK WFS...`, 'info');
+
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                const data = await response.json();
+                console.log('[Fetch] Success! Received data:', data);
+                showStatus(`✓ Success! Received ${data.features?.length || 0} features`, 'success');
+                return data;
+            } catch (error) {
+                console.error('[Fetch] Error:', error);
+                showStatus(`✗ Error: ${error.message}`, 'error');
+                throw error;
+            }
+        }
+
+        // Fetch Laan van Nieuw Land
+        async function fetchLaanVanNieuwLand() {
+            roadLayers.test.clearLayers(); // Clear test data
+            
+            // Use BOTH bounding box AND street name to get only Lelystad roads
+            const params = {
+                service: 'WFS',
+                version: '2.0.0',
+                request: 'GetFeature',
+                typeName: 'nwbwegen:wegvakken',
+                outputFormat: 'application/json',
+                // Combine bbox and street name filter
+                CQL_FILTER: `STR ILIKE '%Laan van Nieuw Land%' AND BBOX(geometry, 5.45, 52.49, 5.52, 52.52, 'EPSG:4326')`,
+                srsName: 'EPSG:4326',
+                count: 100
+            };
+
+            try {
+                const data = await fetchWFS(params);
+                
+                if (data.features && data.features.length === 0) {
+                    showStatus('⚠️ No results for "Laan van Nieuw Land" in Lelystad area. This road might be planned (not yet in NWB database). Try "All Roads (Bbox)" to see what exists.', 'warning');
+                    console.warn('[Fetch] No features found for Laan van Nieuw Land in Lelystad');
+                }
+                
+                fetchedData.laanVanNieuwLand = data;
+                displayData(data, 'Laan van Nieuw Land (Lelystad area only)');
+                addRoadsToMap(data, roadLayers.laan, '#01689B', 'Laan van Nieuw Land', 5);
+                updateStats();
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        // Fetch Westerdreef
+        async function fetchWesterdreef() {
+            roadLayers.test.clearLayers(); // Clear test data
+            
+            // Use BOTH bounding box AND street name to get only Lelystad roads
+            const params = {
+                service: 'WFS',
+                version: '2.0.0',
+                request: 'GetFeature',
+                typeName: 'nwbwegen:wegvakken',
+                outputFormat: 'application/json',
+                // Combine bbox and street name filter
+                CQL_FILTER: `STR ILIKE '%Westerdreef%' AND BBOX(geometry, 5.45, 52.49, 5.52, 52.52, 'EPSG:4326')`,
+                srsName: 'EPSG:4326',
+                count: 100
+            };
+
+            try {
+                const data = await fetchWFS(params);
+                
+                if (data.features && data.features.length === 0) {
+                    showStatus('⚠️ No results for "Westerdreef" in Lelystad area. Road might not exist yet or use different name in NWB.', 'warning');
+                    console.warn('[Fetch] No features found for Westerdreef in Lelystad');
+                }
+                
+                fetchedData.westerdreef = data;
+                displayData(data, 'Westerdreef (Lelystad area only)');
+                addRoadsToMap(data, roadLayers.westerdreef, '#F39200', 'Westerdreef', 5);
+                updateStats();
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        // Fetch all roads in bounding box
+        async function fetchBoundingBox() {
+            roadLayers.test.clearLayers(); // Clear test data
+            
+            const params = {
+                service: 'WFS',
+                version: '2.0.0',
+                request: 'GetFeature',
+                typeName: 'nwbwegen:wegvakken',
+                outputFormat: 'application/json',
+                srsName: 'EPSG:4326',
+                bbox: '5.45,52.49,5.52,52.52,EPSG:4326',
+                count: 500
+            };
+
+            try {
+                const data = await fetchWFS(params);
+                fetchedData.boundingBox = data;
+                displayData(data, 'Bounding Box Roads');
+                
+                // Show unique street names
+                const streets = [...new Set(data.features
+                    .map(f => f.properties.STR)
+                    .filter(s => s))]
+                    .sort()
+                    .slice(0, 30);
+                console.log('[Bbox] Streets found:', streets);
+                
+                addRoadsToMap(data, roadLayers.bbox, '#767676', 'Other Roads', 2);
+                updateStats();
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        // Display fetched data in output div
+        function displayData(geoJson, label) {
+            const output = document.getElementById('output');
+            const formatted = JSON.stringify(geoJson, null, 2);
+            output.textContent = `=== ${label} ===\nFeatures: ${geoJson.features.length}\nCRS: ${geoJson.crs?.properties?.name || 'EPSG:4326'}\n\n${formatted.substring(0, 5000)}${formatted.length > 5000 ? '\n\n... (truncated, see console for full data)' : ''}`;
+            
+            if (formatted.length > 5000) {
+                console.log('[Data] Full response:', geoJson);
+            }
+        }
+
+        // Add roads to map - ENHANCED VERSION
+        function addRoadsToMap(geoJson, layerGroup, color, name, weight = 5) {
+            console.log(`[AddToMap] Processing ${name}...`);
+            layerGroup.clearLayers();
+
+            if (!geoJson || !geoJson.features) {
+                console.error('[AddToMap] No GeoJSON data to display');
+                showStatus('Error: No GeoJSON data received', 'error');
+                return;
+            }
+
+            if (geoJson.features.length === 0) {
+                console.warn('[AddToMap] GeoJSON has 0 features');
+                showStatus(`Warning: ${name} query returned 0 features. Try a different search.`, 'warning');
+                return;
+            }
+
+            console.log(`[AddToMap] ${geoJson.features.length} features to process`);
+            console.log('[AddToMap] First feature:', geoJson.features[0]);
+
+            let addedCount = 0;
+            let invalidCount = 0;
+
+            const geoJsonLayer = L.geoJSON(geoJson, {
+                style: {
+                    color: color,
+                    weight: weight,
+                    opacity: 0.7,
+                    lineJoin: 'round',
+                    lineCap: 'round'
+                },
+                onEachFeature: (feature, layer) => {
+                    addedCount++;
+                    const props = feature.properties;
+                    
+                    const popupContent = `
+                        <div style="min-width: 200px;">
+                            <strong style="color: ${color};">${props.STR || 'Unnamed Road'}</strong><br>
+                            ${props.WEGBEHSRT ? `<strong>Beheer:</strong> ${props.WEGBEHSRT}<br>` : ''}
+                            ${props.WVK_ID ? `<strong>WVK ID:</strong> ${props.WVK_ID}<br>` : ''}
+                            ${props.BST_CODE ? `<strong>Municipality:</strong> ${props.BST_CODE}<br>` : ''}
+                            ${props.WEGNUMMER ? `<strong>Road Number:</strong> ${props.WEGNUMMER}<br>` : ''}
+                            <em style="color: #767676;">Bron: PDOK NWB</em>
+                        </div>
+                    `;
+                    layer.bindPopup(popupContent);
+                },
+                filter: (feature) => {
+                    // Only include features with valid geometry
+                    if (!feature.geometry || !feature.geometry.coordinates) {
+                        console.warn('[AddToMap] Feature has no geometry:', feature);
+                        invalidCount++;
+                        return false;
+                    }
+                    if (feature.geometry.coordinates.length === 0) {
+                        console.warn('[AddToMap] Feature has empty coordinates:', feature);
+                        invalidCount++;
+                        return false;
+                    }
+                    return true;
+                }
+            });
+
+            geoJsonLayer.addTo(layerGroup);
+            console.log(`[AddToMap] ✓ Added ${addedCount} valid features, skipped ${invalidCount} invalid`);
+
+            // Fit map to features
+            try {
+                const bounds = geoJsonLayer.getBounds();
+                if (bounds.isValid()) {
+                    map.fitBounds(bounds, { padding: [50, 50] });
+                    console.log(`[AddToMap] ✓ Map fitted to bounds:`, bounds);
+                    console.log(`[AddToMap] SW: ${bounds.getSouthWest()}, NE: ${bounds.getNorthEast()}`);
+                } else {
+                    console.error('[AddToMap] Bounds are not valid');
+                    showStatus('Warning: Could not fit map to features (invalid bounds)', 'warning');
+                }
+            } catch (error) {
+                console.error('[AddToMap] Error fitting bounds:', error);
+                showStatus(`Error fitting map: ${error.message}`, 'error');
+            }
+
+            // Success message
+            if (addedCount > 0) {
+                showStatus(`✓ Successfully added ${addedCount} road segments to map for ${name}`, 'success');
+            } else {
+                showStatus(`Warning: No valid features could be added for ${name}`, 'warning');
+            }
+        }
+
+        // Clear map
+        function clearMap() {
+            Object.values(roadLayers).forEach(layer => layer.clearLayers());
+            document.getElementById('output').textContent = 'Map cleared.';
+            showStatus('Map cleared', 'info');
+            updateStats();
+            console.log('[Clear] All layers cleared');
+        }
+
+        // Export data
+        function exportData() {
+            const data = {
+                metadata: {
+                    source: 'PDOK Nationaal Wegen Bestand (NWB)',
+                    date: new Date().toISOString(),
+                    description: 'Road geometry for Lelystad Zuid Ring Road project',
+                    fetcher_version: '2.0'
+                },
+                roads: fetchedData
+            };
+
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'lelystad-roads-pdok.json';
+            a.click();
+            URL.revokeObjectURL(url);
+
+            showStatus('✓ Data exported to lelystad-roads-pdok.json', 'success');
+            console.log('[Export] GeoJSON data exported');
+        }
+
+        // Export coordinates for direct use
+        function exportCoordinates() {
+            const coords = {};
+            
+            Object.entries(fetchedData).forEach(([name, data]) => {
+                if (data && data.features) {
+                    const allCoords = [];
+                    data.features.forEach(feature => {
+                        if (feature.geometry.type === 'LineString') {
+                            // Convert from GeoJSON [lon, lat] to Leaflet [lat, lon]
+                            feature.geometry.coordinates.forEach(([lon, lat]) => {
+                                allCoords.push([lat, lon]);
+                            });
+                        } else if (feature.geometry.type === 'MultiLineString') {
+                            feature.geometry.coordinates.forEach(line => {
+                                line.forEach(([lon, lat]) => {
+                                    allCoords.push([lat, lon]);
+                                });
+                            });
+                        }
+                    });
+                    coords[name] = allCoords;
+                }
+            });
+
+            const output = `// Real road coordinates from PDOK (${new Date().toISOString()})
+const realRoadCoordinates = ${JSON.stringify(coords, null, 2)};`;
+
+            const blob = new Blob([output], { type: 'text/javascript' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'real-road-coordinates.js';
+            a.click();
+            URL.revokeObjectURL(url);
+
+            showStatus('✓ Coordinates exported as JavaScript file', 'success');
+            console.log('[Export] Coordinates exported:', coords);
+        }
+
+        // Debug map
+        function debugMap() {
+            console.log('\n=== MAP DEBUG INFO ===');
+            console.log('Map object:', map);
+            console.log('Map center:', map.getCenter());
+            console.log('Map zoom:', map.getZoom());
+            console.log('Map bounds:', map.getBounds());
+            console.log('Map size:', map.getSize());
+            
+            console.log('\n=== LAYER GROUPS ===');
+            Object.entries(roadLayers).forEach(([name, layer]) => {
+                const layerCount = layer.getLayers().length;
+                console.log(`${name}: ${layerCount} layers`);
+                if (layerCount > 0) {
+                    try {
+                        const bounds = layer.getBounds();
+                        console.log(`  Bounds: SW=${bounds.getSouthWest()}, NE=${bounds.getNorthEast()}`);
+                    } catch (e) {
+                        console.log(`  Bounds: Error - ${e.message}`);
+                    }
+                }
+            });
+            
+            console.log('\n=== FETCHED DATA ===');
+            Object.entries(fetchedData).forEach(([name, data]) => {
+                if (data && data.features) {
+                    console.log(`${name}: ${data.features.length} features`);
+                    if (data.features.length > 0) {
+                        const first = data.features[0];
+                        console.log(`  Geometry type: ${first.geometry?.type}`);
+                        console.log(`  Coordinate count: ${first.geometry?.coordinates?.length}`);
+                        console.log(`  Sample coords: ${JSON.stringify(first.geometry?.coordinates?.slice(0, 2))}`);
+                        console.log(`  Properties: ${Object.keys(first.properties).join(', ')}`);
+                    }
+                } else {
+                    console.log(`${name}: No data`);
+                }
+            });
+
+            console.log('\n=== RECOMMENDATIONS ===');
+            if (Object.values(roadLayers).every(l => l.getLayers().length === 0)) {
+                console.log('⚠️ No features on map. Try clicking "Test Map" first.');
+            }
+            if (!fetchedData.laanVanNieuwLand && !fetchedData.westerdreef && !fetchedData.boundingBox) {
+                console.log('⚠️ No data fetched yet. Click a fetch button.');
+            }
+
+            alert('Debug info logged to console. Open browser DevTools (F12) to view complete information.');
+        }
+
+        // Initial status
+        showStatus('Ready! Click "Test Map" to verify map functionality, then fetch real PDOK data.', 'info');
+        console.log('[Init] PDOK Fetcher v2 ready');
+    </script>
+
+    <footer style="margin-top: 40px; padding: 20px; background: #f5f5f5; border-radius: 5px;">
+        <h3>📖 Instructions:</h3>
+        <ol>
+            <li><strong>First:</strong> Click "Test Map" to verify the map is working correctly</li>
+            <li><strong>Then:</strong> Click fetch buttons to retrieve real road data from PDOK</li>
+            <li>Roads will appear on the map with interactive popups</li>
+            <li>Check the output panel for raw GeoJSON data</li>
+            <li>Click "Export GeoJSON" to save the full data</li>
+            <li>Click "Export Coordinates" to get Leaflet-ready coordinate arrays</li>
+            <li>Use "Debug Info" if something doesn't work</li>
+        </ol>
+        
+        <h3>⚠️ Important Notes:</h3>
+        <div style="background: #fff3cd; padding: 15px; border-radius: 4px; border-left: 4px solid #F39200; margin: 15px 0;">
+            <p><strong>About "Laan van Nieuw Land" and "Verlengde Westerdreef":</strong></p>
+            <p>These roads may be <strong>planned but not yet built</strong>, which means they might not exist in the PDOK NWB database yet. The NWB only contains roads that are currently open to traffic.</p>
+            <p><strong>If the specific road names return 0 results:</strong></p>
+            <ul>
+                <li>✅ Click <strong>"All Roads (Bbox)"</strong> to see what roads currently exist in the Lelystad Zuid area</li>
+                <li>✅ Look for existing roads with similar names (Westerdreef without "Verlengde", nearby roads)</li>
+                <li>✅ Use the sample coordinates from <code>real-road-coordinates-sample.js</code> for your demonstrator</li>
+                <li>✅ The sample coordinates are geographically accurate for the planned road locations</li>
+            </ul>
+        </div>
+        
+        <p><strong>Troubleshooting:</strong> If roads don't appear after fetching, click the Debug button and check the browser console (F12). The test data should always work.</p>
+        <p><strong>Version:</strong> 2.1 Fixed Location Filtering | <strong>Date:</strong> 2024-11-11</p>
+    </footer>
+</body>
+</html>
