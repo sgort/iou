@@ -1,12 +1,12 @@
 # Lelystad Ringweg Demonstrator - Project Overzicht
 
-## ðŸ“¦ Wat is Geleverd
+## Wat is Geleverd
 
 Een complete, klaar-voor-deployment statische web demonstrator die drie kerngebruikssituaties visualiseert voor het Lelystad-Zuid Ringweg informatieplatform.
 
 ### Deliverables
 
-âœ… **8 Project Bestanden**:
+**Project Bestanden**:
 1. `index.html` - Hoofdpagina met alle drie use cases
 2. `styles.css` - NL Design System-geÃ¯nspireerde styling (1300+ regels)
 3. `app.js` - Complete applicatie logica met interactiviteit
@@ -16,10 +16,10 @@ Een complete, klaar-voor-deployment statische web demonstrator die drie kerngebr
 7. `DEPLOYMENT.md` - Stap-voor-stap deployment instructies
 8. `.github/workflows/azure-static-web-apps.yml` - CI/CD pipeline
 
-## ðŸŽ¯ Use Cases GeÃ¯mplementeerd
+## Use Cases Geimplementeerd
 
 ### Use Case A: Compliance Dashboard
-**Status**: âœ… Volledig Functioneel
+**Status**: Volledig Functioneel
 
 **Functionaliteit**:
 - 19 uitvoerbare eisen met realistische data
@@ -44,7 +44,7 @@ Een complete, klaar-voor-deployment statische web demonstrator die drie kerngebr
 ---
 
 ### Use Case C: Jurisdictionele CoÃ¶rdinatie
-**Status**: âœ… Volledig Functioneel
+**Status**: Volledig Functioneel
 
 **Functionaliteit**:
 - Conceptuele kaartvisualisatie (SVG-based)
@@ -73,7 +73,7 @@ Een complete, klaar-voor-deployment statische web demonstrator die drie kerngebr
 ---
 
 ### Use Case E: Knowledge Graph Verkenner
-**Status**: âœ… Volledig Functioneel
+**Status**: Volledig Functioneel
 
 **Functionaliteit**:
 - 4 entry point cards (Protocol, Maatregel, Wegvak, Regelgeving)
@@ -101,7 +101,7 @@ Een complete, klaar-voor-deployment statische web demonstrator die drie kerngebr
 
 ---
 
-## ðŸŽ¨ Design & UX
+## Design & UX
 
 ### NL Design System Compliance
 
@@ -132,7 +132,7 @@ Een complete, klaar-voor-deployment statische web demonstrator die drie kerngebr
 
 ---
 
-## ðŸ“Š Mock Data Realisme
+## Mock Data Realisme
 
 ### Requirements (19 stuks)
 Representeren realistische compliance vereisten met:
@@ -157,7 +157,7 @@ Volledig semantisch netwerk met:
 
 ---
 
-## ðŸš€ Deployment Ready
+## Deployment Ready
 
 ### Azure Static Web Apps
 - Zero configuration needed beyond Azure Portal setup
@@ -180,7 +180,7 @@ Volledig semantisch netwerk met:
 
 ---
 
-## ðŸ“ˆ Extensibility
+## Extensibility
 
 ### Modulaire Structuur
 
@@ -236,7 +236,7 @@ const simulation = d3.forceSimulation(nodes)
 
 ---
 
-## ðŸ“‹ Next Steps
+## Next Steps
 
 ### Immediate (Week 1)
 1. âœ… Deploy naar Azure Static Web Apps
@@ -275,7 +275,7 @@ const simulation = d3.forceSimulation(nodes)
 
 ---
 
-## ðŸ’¡ Demo Presentation Tips
+## Demo Presentation Tips
 
 ### Voor Tactical/Strategic Stakeholders
 
@@ -309,7 +309,7 @@ const simulation = d3.forceSimulation(nodes)
 
 ---
 
-## ðŸ“ž Support Contacten
+## Support Contacten
 
 **Technische Vragen**:
 - Azure Static Web Apps: https://learn.microsoft.com/azure/static-web-apps/
@@ -340,9 +340,3 @@ const simulation = d3.forceSimulation(nodes)
 - [ ] Mobile responsiveness verified
 - [ ] Browser compatibility tested (Chrome, Firefox, Safari, Edge)
 - [ ] Stakeholders geÃ¯nformeerd over iou.open-regels.nl
-
----
-
-**Succes met je demonstrator! ðŸŽ‰**
-
-De basis is gelegd voor een modern, semantisch informatieplatform. Deze demonstrator is klaar om stakeholder feedback te verzamelen en de visie tastbaar te maken.
