@@ -1,4 +1,4 @@
-# ðŸš€ Quick Start Guide
+# Quick Start Guide
 
 ## Onmiddellijke Acties (< 5 minuten)
 
@@ -131,7 +131,7 @@ Value: [krijg je van Azure Portal â†’ Custom domains]
 
 ---
 
-## ðŸ“Š Verwachte Resultaten
+## Verwachte Resultaten
 
 ### Lokaal
 âœ… Drie werkende tabs  
@@ -154,7 +154,7 @@ Value: [krijg je van Azure Portal â†’ Custom domains]
 
 ---
 
-## ðŸ› Troubleshooting
+## Troubleshooting
 
 ### "python3: command not found"
 ```bash
@@ -186,7 +186,7 @@ nslookup iou.open-regels.nl
 
 ---
 
-## ðŸ“ž Hulp Nodig?
+## Hulp Nodig?
 
 **Documentatie**:
 - Zie `README.md` voor project overview
@@ -199,7 +199,7 @@ nslookup iou.open-regels.nl
 
 ---
 
-## âœ¨ Volgende Stappen
+## Volgende Stappen
 
 Na succesvolle deployment:
 
@@ -221,8 +221,3 @@ Na succesvolle deployment:
    - Real map integratie
    - TriplyDB connectie
 
----
-
-**Je bent klaar om te starten! ðŸŽ‰**
-
-Succes met je demonstrator!
