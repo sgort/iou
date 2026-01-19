@@ -212,13 +212,16 @@ class LelystadDemo {
         this.renderOverlapAnalysis();
     }
 
-    initializeJurisdictionalMap() {
-        console.log('[V8] Initializing Leaflet map with real road data...');
+initializeJurisdictionalMap() {
+        console.log('[V8] Initializing map with real road data...');
 
         // Only initialize once
         if (this.map) {
-            console.log('[V8] Map already initialized, calling invalidateSize()');
-            this.map.invalidateSize();
+            console.log('[V8] Map already exists, invalidating size...');
+            setTimeout(() => {
+                this.map.invalidateSize();
+                console.log('[V8] Map size invalidated');
+            }, 50);
             return;
         }
 
@@ -230,48 +233,42 @@ class LelystadDemo {
                 return;
             }
 
-            // Clear any placeholder content
-            container.innerHTML = '';
+            console.log('[V8] Container dimensions:', container.offsetWidth, 'x', container.offsetHeight);
 
-            // Create Leaflet map
+            // Initialize Leaflet map
             this.map = L.map('jurisdictional-map', {
                 center: [52.5085, 5.4750],
                 zoom: 13,
-                zoomControl: true,
-                scrollWheelZoom: true
+                zoomControl: true
             });
 
-            console.log('[V8] Map object created');
-
-            // ====================================================================
-            // Base Layers
-            // ====================================================================
-
+            // ================================================================
+            // BASE LAYERS
+            // ================================================================
             const satelliteLayer = L.tileLayer(
                 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
                 {
-                    attribution: 'Tiles &copy; Esri',
-                    maxZoom: 19
+                    attribution: '© Esri',
+                    maxZoom: 19,
+                    id: 'satellite'
                 }
             );
 
             const osmLayer = L.tileLayer(
                 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
                 {
-                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-                    maxZoom: 19
+                    attribution: '© OpenStreetMap contributors',
+                    maxZoom: 19,
+                    id: 'osm'
                 }
             );
 
-            // Add satellite as default
+            // Add satellite layer as default
             satelliteLayer.addTo(this.map);
 
-            console.log('[V8] Base layers added');
-
-            // ====================================================================
-            // Provincial Road: Laan van Nieuw Land
-            // ====================================================================
-
+            // ================================================================
+            // PROVINCIAL ROAD: Laan van Nieuw Land
+            // ================================================================
             const laanPolyline = L.polyline(realRoadData.laanVanNieuwLand, {
                 color: '#01689B',
                 weight: 5,
@@ -287,7 +284,7 @@ class LelystadDemo {
                         <strong>Type:</strong> Provinciale weg (N309 verlenging)<br>
                         <strong>Lengte:</strong> ~4.2 km<br>
                         <strong>Status:</strong> Gepland<br>
-                        <em style="color: #767676; font-size: 11px;">Bron: PDOK NWB (sample data)</em>
+                        <em style="color: #767676; font-size: 11px;">Bron: Project plannen (sample data)</em>
                     </span>
                 </div>
             `);
@@ -295,10 +292,9 @@ class LelystadDemo {
             laanPolyline.addTo(this.map);
             console.log('[V8] Laan van Nieuw Land added to map');
 
-            // ====================================================================
-            // Municipal Road: Verlengde Westerdreef
-            // ====================================================================
-
+            // ================================================================
+            // MUNICIPAL ROAD: Verlengde Westerdreef
+            // ================================================================
             const westerdreefPolyline = L.polyline(realRoadData.verlengdeWesterdreef, {
                 color: '#F39200',
                 weight: 5,
@@ -314,7 +310,7 @@ class LelystadDemo {
                         <strong>Type:</strong> Gemeentelijke weg<br>
                         <strong>Lengte:</strong> ~2.1 km<br>
                         <strong>Status:</strong> Gepland<br>
-                        <em style="color: #767676; font-size: 11px;">Bron: PDOK NWB (sample data)</em>
+                        <em style="color: #767676; font-size: 11px;">Bron: Project plannen (sample data)</em>
                     </span>
                 </div>
             `);
@@ -322,10 +318,9 @@ class LelystadDemo {
             westerdreefPolyline.addTo(this.map);
             console.log('[V8] Verlengde Westerdreef added to map');
 
-            // ====================================================================
-            // Junction Marker
-            // ====================================================================
-
+            // ================================================================
+            // JUNCTION MARKER
+            // ================================================================
             const junctionMarker = L.circleMarker(realRoadData.junction, {
                 radius: 8,
                 fillColor: '#D52B1E',
@@ -339,8 +334,8 @@ class LelystadDemo {
                 <div style="font-family: 'RO Sans', Arial, sans-serif;">
                     <strong style="color: #D52B1E; font-size: 14px;">Knooppunt</strong><br>
                     <span style="font-size: 13px;">
-                        Kruispunt provinciale en gemeentelijke wegdelen<br>
-                        <em style="color: #767676; font-size: 11px;">Coördinaat: ${realRoadData.junction[0].toFixed(4)}, ${realRoadData.junction[1].toFixed(4)}</em>
+                        Kruising provinciale en gemeentelijke weg<br>
+                        <em style="color: #767676; font-size: 11px;">Coördinaten: 52.5095, 5.4760</em>
                     </span>
                 </div>
             `);
@@ -348,26 +343,24 @@ class LelystadDemo {
             junctionMarker.addTo(this.map);
             console.log('[V8] Junction marker added');
 
-            // ====================================================================
-            // NNN Corridor (Ecological Zone)
-            // ====================================================================
-
+            // ================================================================
+            // NNN CORRIDOR (Ecological Zone)
+            // ================================================================
             const nnnPolygon = L.polygon(realRoadData.nnnCorridor, {
                 color: '#39870C',
-                fillColor: '#E8F8E8',
                 weight: 2,
-                opacity: 0.7,
-                fillOpacity: 0.3
+                fillColor: '#E8F8E8',
+                fillOpacity: 0.4,
+                className: 'nnn-corridor'
             });
 
             nnnPolygon.bindPopup(`
                 <div style="font-family: 'RO Sans', Arial, sans-serif;">
                     <strong style="color: #39870C; font-size: 14px;">NNN Corridor</strong><br>
                     <span style="font-size: 13px;">
-                        <strong>Type:</strong> Natuurnetwerk Nederland<br>
-                        <strong>Regelgeving:</strong> NNN Wet 2024<br>
-                        Ecologische verbindingszone met bufferzones<br>
-                        <em style="color: #767676; font-size: 11px;">Beschermde natuurzone</em>
+                        Natuurnetwerk Nederland<br>
+                        Ecologische verbindingszone<br>
+                        <em style="color: #767676; font-size: 11px;">Beschermd natuurgebied</em>
                     </span>
                 </div>
             `);
@@ -375,27 +368,28 @@ class LelystadDemo {
             nnnPolygon.addTo(this.map);
             console.log('[V8] NNN Corridor added');
 
-            // ====================================================================
-            // Natura 2000 Area
-            // ====================================================================
-
-            const natura2000Circle = L.circle(realRoadData.natura2000.center, {
-                radius: realRoadData.natura2000.radius,
-                color: '#7FCDBB',
-                fillColor: '#D5F4E6',
-                weight: 2,
-                opacity: 0.7,
-                fillOpacity: 0.3
-            });
+            // ================================================================
+            // NATURA 2000 AREA
+            // ================================================================
+            const natura2000Circle = L.circle(
+                realRoadData.natura2000.center,
+                {
+                    radius: realRoadData.natura2000.radius,
+                    color: '#01689B',
+                    weight: 2,
+                    fillColor: '#D1ECF1',
+                    fillOpacity: 0.3,
+                    className: 'natura2000-area'
+                }
+            );
 
             natura2000Circle.bindPopup(`
                 <div style="font-family: 'RO Sans', Arial, sans-serif;">
-                    <strong style="color: #7FCDBB; font-size: 14px;">Natura 2000 Gebied</strong><br>
+                    <strong style="color: #01689B; font-size: 14px;">Natura 2000 Gebied</strong><br>
                     <span style="font-size: 13px;">
-                        <strong>Regelgeving:</strong> Natuurbeschermingswet 1998<br>
-                        <strong>EU Richtlijn:</strong> Habitatrichtlijn/Vogelrichtlijn<br>
-                        Beschermd natuurgebied (indicatief)<br>
-                        <em style="color: #767676; font-size: 11px;">Passende beoordeling vereist binnen 500m</em>
+                        Europees beschermd natuurgebied<br>
+                        Radius: 800 meter<br>
+                        <em style="color: #767676; font-size: 11px;">Extra beschermingsmaatregelen vereist</em>
                     </span>
                 </div>
             `);
@@ -403,27 +397,28 @@ class LelystadDemo {
             natura2000Circle.addTo(this.map);
             console.log('[V8] Natura 2000 area added');
 
-            // ====================================================================
-            // Protected Species Habitat
-            // ====================================================================
-
-            const habitatCircle = L.circle(realRoadData.protectedHabitat.center, {
-                radius: realRoadData.protectedHabitat.radius,
-                color: '#FFD700',
-                fillColor: '#FFF9E6',
-                weight: 2,
-                opacity: 0.8,
-                fillOpacity: 0.4
-            });
+            // ================================================================
+            // PROTECTED HABITAT (Species Protection)
+            // ================================================================
+            const habitatCircle = L.circle(
+                realRoadData.protectedHabitat.center,
+                {
+                    radius: realRoadData.protectedHabitat.radius,
+                    color: '#F39200',
+                    weight: 2,
+                    fillColor: '#FFF3CD',
+                    fillOpacity: 0.3,
+                    className: 'protected-habitat'
+                }
+            );
 
             habitatCircle.bindPopup(`
                 <div style="font-family: 'RO Sans', Arial, sans-serif;">
-                    <strong style="color: #CC9900; font-size: 14px;">Beschermd Habitat</strong><br>
+                    <strong style="color: #F39200; font-size: 14px;">Beschermde Habitat</strong><br>
                     <span style="font-size: 13px;">
-                        <strong>Soorten:</strong> Vleermuizen, Rugstreeppad<br>
-                        <strong>Regelgeving:</strong> Flora- en faunawet<br>
-                        Leefgebied beschermde diersoorten<br>
-                        <em style="color: #767676; font-size: 11px;">Monitoring vereist tijdens bouwfase</em>
+                        Leefgebied beschermde soorten<br>
+                        Radius: 500 meter<br>
+                        <em style="color: #767676; font-size: 11px;">Vleermuizen en amfibieën</em>
                     </span>
                 </div>
             `);
@@ -431,68 +426,42 @@ class LelystadDemo {
             habitatCircle.addTo(this.map);
             console.log('[V8] Protected habitat added');
 
-            // ====================================================================
-            // Map Controls
-            // ====================================================================
-
+// ================================================================
+            // MAP CONTROLS
+            // ================================================================
+            
             // Scale bar
             L.control.scale({
-                metric: true,
                 imperial: false,
+                metric: true,
                 position: 'bottomleft'
             }).addTo(this.map);
 
             // Layer control
             L.control.layers(
                 {
-                    'Satelliet (Esri)': satelliteLayer,
+                    'Satelliet': satelliteLayer,
                     'OpenStreetMap': osmLayer
                 },
-                {
-                    'Laan van Nieuw Land (Provinciaal)': laanPolyline,
-                    'Verlengde Westerdreef (Gemeentelijk)': westerdreefPolyline,
-                    'Knooppunt': junctionMarker,
-                    'NNN Corridor': nnnPolygon,
-                    'Natura 2000': natura2000Circle,
-                    'Beschermd Habitat': habitatCircle
-                },
-                {
-                    position: 'topright',
-                    collapsed: false
-                }
+                null,
+                { position: 'topright' }
             ).addTo(this.map);
 
-            // ====================================================================
-            // Fit Map to Features
-            // ====================================================================
-
-            const allFeatures = L.featureGroup([
-                laanPolyline,
-                westerdreefPolyline,
-                nnnPolygon,
-                natura2000Circle,
-                habitatCircle
-            ]);
-
-            this.map.fitBounds(allFeatures.getBounds(), {
-                padding: [50, 50]
-            });
-
-            console.log('[V8] Map initialization complete!');
-            console.log('[V8] Center:', this.map.getCenter());
-            console.log('[V8] Zoom:', this.map.getZoom());
-
-            // Store layer references for future use
+            // Store layer references for future use (names match checkbox IDs)
             this.mapLayers = {
-                laan: laanPolyline,
-                westerdreef: westerdreefPolyline,
-                junction: junctionMarker,
-                nnn: nnnPolygon,
-                natura2000: natura2000Circle,
-                habitat: habitatCircle
+                provincial: laanPolyline,      // Checkbox: layer-provincial
+                municipal: westerdreefPolyline, // Checkbox: layer-municipal
+                junction: junctionMarker,       // No checkbox (always visible)
+                nnn: nnnPolygon,               // Checkbox: layer-nnn
+                natura2000: natura2000Circle,   // Checkbox: layer-natura2000
+                protected: habitatCircle        // Checkbox: layer-protected
             };
 
-        }, 100); // Small delay for DOM to be ready
+            console.log('[V8] Map initialization complete');
+            console.log('[V8] Map center:', this.map.getCenter());
+            console.log('[V8] Map zoom:', this.map.getZoom());
+
+        }, 100); // Delay for DOM readiness
     }
     
     initializeLeafletMap() {
@@ -1280,6 +1249,6 @@ let demo;
 document.addEventListener('DOMContentLoaded', () => {
     demo = new LelystadDemo();
     window.demo = demo; // Make globally accessible for debugging
-    console.log('[V7] Lelystad Ringweg Demonstrator geladen');
-    console.log('[V7] Demo object:', demo);
+    console.log('[V8] Lelystad Ringweg Demonstrator geladen'); // Changed from V7 to V8
+    console.log('[V8] Demo object:', demo);
 });
