@@ -188,19 +188,19 @@ Stage 7: Publication (1 day)
 ## 5.3 Workflow Instance Example
 
 ```turtle
-flvl-id:workflow-instance-nnn-2024-11 
+flvl-id:workflow-instance-nnn-2026-11 
     a flvl-def:WorkflowInstance ;
-    dcterms:title "NNN Regulation Analysis - November 2024" ;
+    dcterms:title "NNN Regulation Analysis - November 2026" ;
     flvl-def:basedOn flvl-proc:RegulatoryAnalysisWorkflow ;
     flvl-def:currentStage flvl-proc:Stage4-Annotation ;
     flvl-def:workflowStatus "in-progress" ;
-    prov:startedAtTime "2024-11-05T09:00:00Z" ;
+    prov:startedAtTime "2026-11-05T09:00:00Z" ;
     
     # Stage history with provenance
     flvl-def:stageHistory [
         flvl-def:completedStage flvl-proc:Stage1-Collection ;
         flvl-def:completedBy flvl-id:expert-legal-analyst-de-vries ;
-        flvl-def:completedAt "2024-11-06T15:30:00Z"
+        flvl-def:completedAt "2026-11-06T15:30:00Z"
     ] .
 ```
 
@@ -440,7 +440,7 @@ flvl-id:access-log-12345
     flvl-def:operationPerformed "read" ;
     
     # When
-    prov:atTime "2024-11-18T10:23:45Z" ;
+    prov:atTime "2026-11-18T10:23:45Z" ;
     
     # Why
     flvl-def:accessJustification "Reviewing for compliance verification report" ;
@@ -677,7 +677,7 @@ Layout:
 │  Selected: REQ-NNN-001                      │
 │  ┌───────────────────────────────────────┐  │
 │  │ Connections:                          │  │
-│  │ ↑ Source: NaturaWet v2024-01          │  │
+│  │ ↑ Source: NaturaWet v2026-01          │  │
 │  │ → Requires: 2 Measures                │  │
 │  │ → Checkpoints: 1 Approval Needed      │  │
 │  │ ↓ Affects: LaanVanNieuwLand Sec 1-4   │  │

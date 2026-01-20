@@ -1,100 +1,104 @@
 // Main application logic for Lelystad Ringweg Demonstrator
 
 class LelystadDemo {
-    constructor() {
-        this.currentView = 'compliance';
-        this.filters = {
-            roadSection: 'all',
-            status: 'all',
-            domain: 'all'
-        };
-        this.selectedNode = null;
-        
-        this.init();
+  constructor() {
+    this.currentView = "compliance";
+    this.filters = {
+      roadSection: "all",
+      status: "all",
+      domain: "all",
+    };
+    this.selectedNode = null;
+
+    this.init();
+  }
+
+  init() {
+    this.setupNavigation();
+    this.renderComplianceDashboard();
+    this.setupFilters();
+    this.renderJurisdictionalView();
+    this.renderKnowledgeGraph();
+  }
+
+  // Navigation
+  setupNavigation() {
+    const navButtons = document.querySelectorAll(".nav-button");
+    navButtons.forEach((button) => {
+      button.addEventListener("click", (e) => {
+        const viewName = e.currentTarget.dataset.view;
+        this.switchView(viewName);
+      });
+    });
+  }
+
+  switchView(viewName) {
+    // Update navigation
+    document.querySelectorAll(".nav-button").forEach((btn) => {
+      btn.classList.remove("active");
+      btn.setAttribute("aria-selected", "false");
+    });
+    document.querySelector(`[data-view="${viewName}"]`).classList.add("active");
+    document
+      .querySelector(`[data-view="${viewName}"]`)
+      .setAttribute("aria-selected", "true");
+
+    // Update views
+    document.querySelectorAll(".view").forEach((view) => {
+      view.classList.remove("active");
+    });
+    document.getElementById(`${viewName}-view`).classList.add("active");
+
+    this.currentView = viewName;
+
+    // Initialize or refresh the map when switching to jurisdictional view
+    // When switching to jurisdictional view, initialize or refresh map
+    if (viewName === "jurisdictional") {
+      if (!this.map) {
+        this.initializeJurisdictionalMap();
+      } else {
+        // Map exists, just refresh it
+        setTimeout(() => {
+          this.map.invalidateSize();
+          console.log("[V8] Map size invalidated after view switch");
+        }, 50);
+      }
     }
-    
-    init() {
-        this.setupNavigation();
-        this.renderComplianceDashboard();
-        this.setupFilters();
-        this.renderJurisdictionalView();
-        this.renderKnowledgeGraph();
-    }
-    
-    // Navigation
-    setupNavigation() {
-        const navButtons = document.querySelectorAll('.nav-button');
-        navButtons.forEach(button => {
-            button.addEventListener('click', (e) => {
-                const viewName = e.currentTarget.dataset.view;
-                this.switchView(viewName);
-            });
-        });
-    }
-    
-    switchView(viewName) {
-        // Update navigation
-        document.querySelectorAll('.nav-button').forEach(btn => {
-            btn.classList.remove('active');
-            btn.setAttribute('aria-selected', 'false');
-        });
-        document.querySelector(`[data-view="${viewName}"]`).classList.add('active');
-        document.querySelector(`[data-view="${viewName}"]`).setAttribute('aria-selected', 'true');
-        
-        // Update views
-        document.querySelectorAll('.view').forEach(view => {
-            view.classList.remove('active');
-        });
-        document.getElementById(`${viewName}-view`).classList.add('active');
-        
-        this.currentView = viewName;
-        
-        // Initialize or refresh the map when switching to jurisdictional view
-        // When switching to jurisdictional view, initialize or refresh map
-        if (viewName === 'jurisdictional') {
-            if (!this.map) {
-                this.initializeJurisdictionalMap();
-            } else {
-                // Map exists, just refresh it
-                setTimeout(() => {
-                    this.map.invalidateSize();
-                    console.log('[V8] Map size invalidated after view switch');
-                }, 50);
-            }
-        }
-    }
-    
-    // USE CASE A: COMPLIANCE DASHBOARD
-    setupFilters() {
-        const roadSectionFilter = document.getElementById('road-section-filter');
-        const statusFilter = document.getElementById('status-filter');
-        const domainFilter = document.getElementById('domain-filter');
-        
-        roadSectionFilter.addEventListener('change', (e) => {
-            this.filters.roadSection = e.target.value;
-            this.updateComplianceTable();
-        });
-        
-        statusFilter.addEventListener('change', (e) => {
-            this.filters.status = e.target.value;
-            this.updateComplianceTable();
-        });
-        
-        domainFilter.addEventListener('change', (e) => {
-            this.filters.domain = e.target.value;
-            this.updateComplianceTable();
-        });
-    }
-    
-    renderComplianceDashboard() {
-        this.updateComplianceTable();
-    }
-    
-    updateComplianceTable() {
-        const filteredRequirements = this.filterRequirements(mockData.requirements);
-        const tbody = document.getElementById('requirements-tbody');
-        
-        tbody.innerHTML = filteredRequirements.map(req => `
+  }
+
+  // USE CASE A: COMPLIANCE DASHBOARD
+  setupFilters() {
+    const roadSectionFilter = document.getElementById("road-section-filter");
+    const statusFilter = document.getElementById("status-filter");
+    const domainFilter = document.getElementById("domain-filter");
+
+    roadSectionFilter.addEventListener("change", (e) => {
+      this.filters.roadSection = e.target.value;
+      this.updateComplianceTable();
+    });
+
+    statusFilter.addEventListener("change", (e) => {
+      this.filters.status = e.target.value;
+      this.updateComplianceTable();
+    });
+
+    domainFilter.addEventListener("change", (e) => {
+      this.filters.domain = e.target.value;
+      this.updateComplianceTable();
+    });
+  }
+
+  renderComplianceDashboard() {
+    this.updateComplianceTable();
+  }
+
+  updateComplianceTable() {
+    const filteredRequirements = this.filterRequirements(mockData.requirements);
+    const tbody = document.getElementById("requirements-tbody");
+
+    tbody.innerHTML = filteredRequirements
+      .map(
+        (req) => `
             <tr>
                 <td>
                     <strong>${req.title}</strong>
@@ -134,152 +138,165 @@ class LelystadDemo {
                     </button>
                 </td>
             </tr>
-        `).join('');
-        
-        // Update summary cards
-        this.updateSummaryCards(filteredRequirements);
+        `,
+      )
+      .join("");
+
+    // Update summary cards
+    this.updateSummaryCards(filteredRequirements);
+  }
+
+  filterRequirements(requirements) {
+    return requirements.filter((req) => {
+      if (
+        this.filters.roadSection !== "all" &&
+        req.roadSectionId !== this.filters.roadSection
+      ) {
+        return false;
+      }
+      if (this.filters.status !== "all" && req.status !== this.filters.status) {
+        return false;
+      }
+      if (
+        this.filters.domain !== "all" &&
+        req.domainId !== this.filters.domain
+      ) {
+        return false;
+      }
+      return true;
+    });
+  }
+
+  updateSummaryCards(requirements) {
+    const statusCounts = {
+      compliant: requirements.filter((r) => r.status === "compliant").length,
+      "in-progress": requirements.filter((r) => r.status === "in-progress")
+        .length,
+      pending: requirements.filter((r) => r.status === "pending").length,
+      overdue: requirements.filter((r) => r.status === "overdue").length,
+    };
+
+    const cards = document.querySelectorAll(".summary-card .card-value");
+    if (cards.length >= 4) {
+      cards[0].textContent = statusCounts.compliant;
+      cards[1].textContent = statusCounts["in-progress"];
+      cards[2].textContent = statusCounts.overdue;
+      cards[3].textContent = requirements.length;
     }
-    
-    filterRequirements(requirements) {
-        return requirements.filter(req => {
-            if (this.filters.roadSection !== 'all' && req.roadSectionId !== this.filters.roadSection) {
-                return false;
-            }
-            if (this.filters.status !== 'all' && req.status !== this.filters.status) {
-                return false;
-            }
-            if (this.filters.domain !== 'all' && req.domainId !== this.filters.domain) {
-                return false;
-            }
-            return true;
-        });
-    }
-    
-    updateSummaryCards(requirements) {
-        const statusCounts = {
-            compliant: requirements.filter(r => r.status === 'compliant').length,
-            'in-progress': requirements.filter(r => r.status === 'in-progress').length,
-            pending: requirements.filter(r => r.status === 'pending').length,
-            overdue: requirements.filter(r => r.status === 'overdue').length
-        };
-        
-        const cards = document.querySelectorAll('.summary-card .card-value');
-        if (cards.length >= 4) {
-            cards[0].textContent = statusCounts.compliant;
-            cards[1].textContent = statusCounts['in-progress'];
-            cards[2].textContent = statusCounts.overdue;
-            cards[3].textContent = requirements.length;
-        }
-    }
-    
-    renderStatusBadge(status) {
-        const statusMap = {
-            'compliant': { label: 'Compliant', class: 'compliant' },
-            'in-progress': { label: 'In behandeling', class: 'in-progress' },
-            'pending': { label: 'Openstaand', class: 'pending' },
-            'overdue': { label: 'Achterstallig', class: 'overdue' }
-        };
-        
-        const statusInfo = statusMap[status] || { label: status, class: 'pending' };
-        
-        return `
+  }
+
+  renderStatusBadge(status) {
+    const statusMap = {
+      compliant: { label: "Compliant", class: "compliant" },
+      "in-progress": { label: "In behandeling", class: "in-progress" },
+      pending: { label: "Openstaand", class: "pending" },
+      overdue: { label: "Achterstallig", class: "overdue" },
+    };
+
+    const statusInfo = statusMap[status] || { label: status, class: "pending" };
+
+    return `
             <span class="status-badge ${statusInfo.class}">
                 <span class="status-dot"></span>
                 ${statusInfo.label}
             </span>
         `;
+  }
+
+  formatDate(dateString) {
+    const date = new Date(dateString);
+    const options = { year: "numeric", month: "short", day: "numeric" };
+    return date.toLocaleDateString("nl-NL", options);
+  }
+
+  viewRequirementDetails(reqId) {
+    const requirement = mockData.requirements.find((r) => r.id === reqId);
+    if (!requirement) return;
+
+    alert(
+      `Requirement Details\n\n${requirement.title}\n\n${requirement.description}\n\nRegulatie: ${requirement.regulation}\n\nIn een volledig systeem zou hier een gedetailleerde view openen met:\n- Volledige RDF triples\n- Gekoppelde bronnen\n- Historische wijzigingen\n- Annotaties en interpretaties`,
+    );
+  }
+
+  // USE CASE C: JURISDICTIONAL COORDINATION
+  renderJurisdictionalView() {
+    this.setupLayerControls();
+    // DON'T initialize map here - wait until view is active
+    // this.initializeLeafletMap();
+    // Render overlap analysis AFTER checkboxes are set up
+    this.renderOverlapAnalysis();
+  }
+
+  initializeJurisdictionalMap() {
+    console.log("[V8] Initializing map with real road data...");
+
+    // Only initialize once
+    if (this.map) {
+      console.log("[V8] Map already exists, invalidating size...");
+      setTimeout(() => {
+        this.map.invalidateSize();
+        console.log("[V8] Map size invalidated");
+      }, 50);
+      return;
     }
-    
-    formatDate(dateString) {
-        const date = new Date(dateString);
-        const options = { year: 'numeric', month: 'short', day: 'numeric' };
-        return date.toLocaleDateString('nl-NL', options);
-    }
-    
-    viewRequirementDetails(reqId) {
-        const requirement = mockData.requirements.find(r => r.id === reqId);
-        if (!requirement) return;
-        
-        alert(`Requirement Details\n\n${requirement.title}\n\n${requirement.description}\n\nRegulatie: ${requirement.regulation}\n\nIn een volledig systeem zou hier een gedetailleerde view openen met:\n- Volledige RDF triples\n- Gekoppelde bronnen\n- Historische wijzigingen\n- Annotaties en interpretaties`);
-    }
-    
-    // USE CASE C: JURISDICTIONAL COORDINATION
-    renderJurisdictionalView() {
-        this.setupLayerControls();
-        // DON'T initialize map here - wait until view is active
-        // this.initializeLeafletMap();
-        // Render overlap analysis AFTER checkboxes are set up
-        this.renderOverlapAnalysis();
-    }
 
-    initializeJurisdictionalMap() {
-        console.log('[V8] Initializing Leaflet map with real road data...');
+    // Small delay to ensure container is visible
+    setTimeout(() => {
+      const container = document.getElementById("jurisdictional-map");
+      if (!container) {
+        console.error("[V8] Map container not found!");
+        return;
+      }
 
-        // Only initialize once
-        if (this.map) {
-            console.log('[V8] Map already initialized, calling invalidateSize()');
-            this.map.invalidateSize();
-            return;
-        }
+      console.log(
+        "[V8] Container dimensions:",
+        container.offsetWidth,
+        "x",
+        container.offsetHeight,
+      );
 
-        // Small delay to ensure container is visible
-        setTimeout(() => {
-            const container = document.getElementById('jurisdictional-map');
-            if (!container) {
-                console.error('[V8] Map container not found!');
-                return;
-            }
+      // Initialize Leaflet map
+      this.map = L.map("jurisdictional-map", {
+        center: [52.5085, 5.475],
+        zoom: 13,
+        zoomControl: true,
+      });
 
-            // Clear any placeholder content
-            container.innerHTML = '';
+      // ================================================================
+      // BASE LAYERS
+      // ================================================================
+      const satelliteLayer = L.tileLayer(
+        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+        {
+          attribution: "© Esri",
+          maxZoom: 19,
+          id: "satellite",
+        },
+      );
 
-            // Create Leaflet map
-            this.map = L.map('jurisdictional-map', {
-                center: [52.5085, 5.4750],
-                zoom: 13,
-                zoomControl: true,
-                scrollWheelZoom: true
-            });
+      const osmLayer = L.tileLayer(
+        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        {
+          attribution: "© OpenStreetMap contributors",
+          maxZoom: 19,
+          id: "osm",
+        },
+      );
 
-            console.log('[V8] Map object created');
+      // Add satellite layer as default
+      satelliteLayer.addTo(this.map);
 
-            // ====================================================================
-            // Base Layers
-            // ====================================================================
+      // ================================================================
+      // PROVINCIAL ROAD: Laan van Nieuw Land
+      // ================================================================
+      const laanPolyline = L.polyline(realRoadData.laanVanNieuwLand, {
+        color: "#01689B",
+        weight: 5,
+        opacity: 0.8,
+        className: "provincial-road",
+      });
 
-            const satelliteLayer = L.tileLayer(
-                'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-                {
-                    attribution: 'Tiles &copy; Esri',
-                    maxZoom: 19
-                }
-            );
-
-            const osmLayer = L.tileLayer(
-                'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                {
-                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-                    maxZoom: 19
-                }
-            );
-
-            // Add satellite as default
-            satelliteLayer.addTo(this.map);
-
-            console.log('[V8] Base layers added');
-
-            // ====================================================================
-            // Provincial Road: Laan van Nieuw Land
-            // ====================================================================
-
-            const laanPolyline = L.polyline(realRoadData.laanVanNieuwLand, {
-                color: '#01689B',
-                weight: 5,
-                opacity: 0.8,
-                className: 'provincial-road'
-            });
-
-            laanPolyline.bindPopup(`
+      laanPolyline.bindPopup(`
                 <div style="font-family: 'RO Sans', Arial, sans-serif;">
                     <strong style="color: #01689B; font-size: 14px;">Laan van Nieuw Land</strong><br>
                     <span style="font-size: 13px;">
@@ -287,26 +304,27 @@ class LelystadDemo {
                         <strong>Type:</strong> Provinciale weg (N309 verlenging)<br>
                         <strong>Lengte:</strong> ~4.2 km<br>
                         <strong>Status:</strong> Gepland<br>
-                        <em style="color: #767676; font-size: 11px;">Bron: PDOK NWB (sample data)</em>
+                        <em style="color: #767676; font-size: 11px;">Bron: Project plannen (sample data)</em>
                     </span>
                 </div>
             `);
 
-            laanPolyline.addTo(this.map);
-            console.log('[V8] Laan van Nieuw Land added to map');
+      console.log("[V8] Laan van Nieuw Land layer created");
 
-            // ====================================================================
-            // Municipal Road: Verlengde Westerdreef
-            // ====================================================================
+      // ================================================================
+      // MUNICIPAL ROAD: Verlengde Westerdreef
+      // ================================================================
+      const westerdreefPolyline = L.polyline(
+        realRoadData.verlengdeWesterdreef,
+        {
+          color: "#F39200",
+          weight: 5,
+          opacity: 0.8,
+          className: "municipal-road",
+        },
+      );
 
-            const westerdreefPolyline = L.polyline(realRoadData.verlengdeWesterdreef, {
-                color: '#F39200',
-                weight: 5,
-                opacity: 0.8,
-                className: 'municipal-road'
-            });
-
-            westerdreefPolyline.bindPopup(`
+      westerdreefPolyline.bindPopup(`
                 <div style="font-family: 'RO Sans', Arial, sans-serif;">
                     <strong style="color: #F39200; font-size: 14px;">Verlengde Westerdreef</strong><br>
                     <span style="font-size: 13px;">
@@ -314,412 +332,232 @@ class LelystadDemo {
                         <strong>Type:</strong> Gemeentelijke weg<br>
                         <strong>Lengte:</strong> ~2.1 km<br>
                         <strong>Status:</strong> Gepland<br>
-                        <em style="color: #767676; font-size: 11px;">Bron: PDOK NWB (sample data)</em>
+                        <em style="color: #767676; font-size: 11px;">Bron: Project plannen (sample data)</em>
                     </span>
                 </div>
             `);
 
-            westerdreefPolyline.addTo(this.map);
-            console.log('[V8] Verlengde Westerdreef added to map');
+      console.log("[V8] Verlengde Westerdreef layer created");
 
-            // ====================================================================
-            // Junction Marker
-            // ====================================================================
+      // ================================================================
+      // JUNCTION MARKER
+      // ================================================================
+      const junctionMarker = L.circleMarker(realRoadData.junction, {
+        radius: 8,
+        fillColor: "#D52B1E",
+        color: "#FFFFFF",
+        weight: 2,
+        opacity: 1,
+        fillOpacity: 0.9,
+      });
 
-            const junctionMarker = L.circleMarker(realRoadData.junction, {
-                radius: 8,
-                fillColor: '#D52B1E',
-                color: '#FFFFFF',
-                weight: 2,
-                opacity: 1,
-                fillOpacity: 0.9
-            });
-
-            junctionMarker.bindPopup(`
+      junctionMarker.bindPopup(`
                 <div style="font-family: 'RO Sans', Arial, sans-serif;">
                     <strong style="color: #D52B1E; font-size: 14px;">Knooppunt</strong><br>
                     <span style="font-size: 13px;">
-                        Kruispunt provinciale en gemeentelijke wegdelen<br>
-                        <em style="color: #767676; font-size: 11px;">Coördinaat: ${realRoadData.junction[0].toFixed(4)}, ${realRoadData.junction[1].toFixed(4)}</em>
+                        Kruising provinciale en gemeentelijke weg<br>
+                        <em style="color: #767676; font-size: 11px;">Coördinaten: 52.5095, 5.4760</em>
                     </span>
                 </div>
             `);
 
-            junctionMarker.addTo(this.map);
-            console.log('[V8] Junction marker added');
+      junctionMarker.addTo(this.map); // Always visible (no checkbox)
+      console.log("[V8] Junction marker added (always visible)");
 
-            // ====================================================================
-            // NNN Corridor (Ecological Zone)
-            // ====================================================================
+      // ================================================================
+      // NNN CORRIDOR (Ecological Zone)
+      // ================================================================
+      const nnnPolygon = L.polygon(realRoadData.nnnCorridor, {
+        color: "#39870C",
+        weight: 2,
+        fillColor: "#E8F8E8",
+        fillOpacity: 0.4,
+        className: "nnn-corridor",
+      });
 
-            const nnnPolygon = L.polygon(realRoadData.nnnCorridor, {
-                color: '#39870C',
-                fillColor: '#E8F8E8',
-                weight: 2,
-                opacity: 0.7,
-                fillOpacity: 0.3
-            });
-
-            nnnPolygon.bindPopup(`
+      nnnPolygon.bindPopup(`
                 <div style="font-family: 'RO Sans', Arial, sans-serif;">
                     <strong style="color: #39870C; font-size: 14px;">NNN Corridor</strong><br>
                     <span style="font-size: 13px;">
-                        <strong>Type:</strong> Natuurnetwerk Nederland<br>
-                        <strong>Regelgeving:</strong> NNN Wet 2024<br>
-                        Ecologische verbindingszone met bufferzones<br>
-                        <em style="color: #767676; font-size: 11px;">Beschermde natuurzone</em>
+                        Natuurnetwerk Nederland<br>
+                        Ecologische verbindingszone<br>
+                        <em style="color: #767676; font-size: 11px;">Beschermd natuurgebied</em>
                     </span>
                 </div>
             `);
 
-            nnnPolygon.addTo(this.map);
-            console.log('[V8] NNN Corridor added');
+      console.log("[V8] NNN Corridor layer created");
 
-            // ====================================================================
-            // Natura 2000 Area
-            // ====================================================================
+      // ================================================================
+      // NATURA 2000 AREA
+      // ================================================================
+      const natura2000Circle = L.circle(realRoadData.natura2000.center, {
+        radius: realRoadData.natura2000.radius,
+        color: "#01689B",
+        weight: 2,
+        fillColor: "#D1ECF1",
+        fillOpacity: 0.3,
+        className: "natura2000-area",
+      });
 
-            const natura2000Circle = L.circle(realRoadData.natura2000.center, {
-                radius: realRoadData.natura2000.radius,
-                color: '#7FCDBB',
-                fillColor: '#D5F4E6',
-                weight: 2,
-                opacity: 0.7,
-                fillOpacity: 0.3
-            });
-
-            natura2000Circle.bindPopup(`
+      natura2000Circle.bindPopup(`
                 <div style="font-family: 'RO Sans', Arial, sans-serif;">
-                    <strong style="color: #7FCDBB; font-size: 14px;">Natura 2000 Gebied</strong><br>
+                    <strong style="color: #01689B; font-size: 14px;">Natura 2000 Gebied</strong><br>
                     <span style="font-size: 13px;">
-                        <strong>Regelgeving:</strong> Natuurbeschermingswet 1998<br>
-                        <strong>EU Richtlijn:</strong> Habitatrichtlijn/Vogelrichtlijn<br>
-                        Beschermd natuurgebied (indicatief)<br>
-                        <em style="color: #767676; font-size: 11px;">Passende beoordeling vereist binnen 500m</em>
+                        Europees beschermd natuurgebied<br>
+                        Radius: 800 meter<br>
+                        <em style="color: #767676; font-size: 11px;">Extra beschermingsmaatregelen vereist</em>
                     </span>
                 </div>
             `);
 
-            natura2000Circle.addTo(this.map);
-            console.log('[V8] Natura 2000 area added');
+      console.log("[V8] Natura 2000 area layer created");
 
-            // ====================================================================
-            // Protected Species Habitat
-            // ====================================================================
+      // ================================================================
+      // PROTECTED HABITAT (Species Protection)
+      // ================================================================
+      const habitatCircle = L.circle(realRoadData.protectedHabitat.center, {
+        radius: realRoadData.protectedHabitat.radius,
+        color: "#F39200",
+        weight: 2,
+        fillColor: "#FFF3CD",
+        fillOpacity: 0.3,
+        className: "protected-habitat",
+      });
 
-            const habitatCircle = L.circle(realRoadData.protectedHabitat.center, {
-                radius: realRoadData.protectedHabitat.radius,
-                color: '#FFD700',
-                fillColor: '#FFF9E6',
-                weight: 2,
-                opacity: 0.8,
-                fillOpacity: 0.4
-            });
-
-            habitatCircle.bindPopup(`
+      habitatCircle.bindPopup(`
                 <div style="font-family: 'RO Sans', Arial, sans-serif;">
-                    <strong style="color: #CC9900; font-size: 14px;">Beschermd Habitat</strong><br>
+                    <strong style="color: #F39200; font-size: 14px;">Beschermde Habitat</strong><br>
                     <span style="font-size: 13px;">
-                        <strong>Soorten:</strong> Vleermuizen, Rugstreeppad<br>
-                        <strong>Regelgeving:</strong> Flora- en faunawet<br>
-                        Leefgebied beschermde diersoorten<br>
-                        <em style="color: #767676; font-size: 11px;">Monitoring vereist tijdens bouwfase</em>
+                        Leefgebied beschermde soorten<br>
+                        Radius: 500 meter<br>
+                        <em style="color: #767676; font-size: 11px;">Vleermuizen en amfibieën</em>
                     </span>
                 </div>
             `);
 
-            habitatCircle.addTo(this.map);
-            console.log('[V8] Protected habitat added');
+      console.log("[V8] Protected habitat layer created");
 
-            // ====================================================================
-            // Map Controls
-            // ====================================================================
+      // ================================================================
+      // MAP CONTROLS
+      // ================================================================
 
-            // Scale bar
-            L.control.scale({
-                metric: true,
-                imperial: false,
-                position: 'bottomleft'
-            }).addTo(this.map);
+      // Scale bar
+      L.control
+        .scale({
+          imperial: false,
+          metric: true,
+          position: "bottomleft",
+        })
+        .addTo(this.map);
 
-            // Layer control
-            L.control.layers(
-                {
-                    'Satelliet (Esri)': satelliteLayer,
-                    'OpenStreetMap': osmLayer
-                },
-                {
-                    'Laan van Nieuw Land (Provinciaal)': laanPolyline,
-                    'Verlengde Westerdreef (Gemeentelijk)': westerdreefPolyline,
-                    'Knooppunt': junctionMarker,
-                    'NNN Corridor': nnnPolygon,
-                    'Natura 2000': natura2000Circle,
-                    'Beschermd Habitat': habitatCircle
-                },
-                {
-                    position: 'topright',
-                    collapsed: false
-                }
-            ).addTo(this.map);
+      // Layer control
+      L.control
+        .layers(
+          {
+            Satelliet: satelliteLayer,
+            OpenStreetMap: osmLayer,
+          },
+          null,
+          { position: "topright" },
+        )
+        .addTo(this.map);
 
-            // ====================================================================
-            // Fit Map to Features
-            // ====================================================================
+      this.mapLayers = {
+        provincial: laanPolyline, // layer-provincial
+        municipal: westerdreefPolyline, // layer-municipal
+        junction: junctionMarker, // Always visible (no checkbox)
+        nnn: nnnPolygon, // layer-nnn
+        natura2000: natura2000Circle, // layer-natura2000
+        protected: habitatCircle, // layer-protected
+      };
 
-            const allFeatures = L.featureGroup([
-                laanPolyline,
-                westerdreefPolyline,
-                nnnPolygon,
-                natura2000Circle,
-                habitatCircle
-            ]);
+      console.log("[V8] Map initialization complete");
+      console.log("[V8] Map center:", this.map.getCenter());
+      console.log("[V8] Map zoom:", this.map.getZoom());
 
-            this.map.fitBounds(allFeatures.getBounds(), {
-                padding: [50, 50]
-            });
+      // Let updateMapLayers() add layers based on checkbox state
+      console.log("[V8] Calling updateMapLayers to add initial layers...");
+      this.updateMapLayers();
+    }, 100); // Delay for DOM readiness
+  }
 
-            console.log('[V8] Map initialization complete!');
-            console.log('[V8] Center:', this.map.getCenter());
-            console.log('[V8] Zoom:', this.map.getZoom());
+  updateMapLayers() {
+    if (!this.map) return;
 
-            // Store layer references for future use
-            this.mapLayers = {
-                laan: laanPolyline,
-                westerdreef: westerdreefPolyline,
-                junction: junctionMarker,
-                nnn: nnnPolygon,
-                natura2000: natura2000Circle,
-                habitat: habitatCircle
-            };
+    console.log("[V7] Updating map layers...");
 
-        }, 100); // Small delay for DOM to be ready
-    }
-    
-    initializeLeafletMap() {
-        // Only initialize once
-        if (this.map) {
-            console.log('[V6] Map already exists, invalidating size...');
-            // Fix: Invalidate size when switching back to this view
-            setTimeout(() => {
-                this.map.invalidateSize();
-                console.log('[V6] Map size invalidated');
-            }, 100);
-            this.updateMapLayers();
-            return;
+    // Get active layers from checkboxes
+    const activeLayers = {
+      provincial:
+        document.querySelector('[data-layer="provincial"]')?.checked || false,
+      municipal:
+        document.querySelector('[data-layer="municipal"]')?.checked || false,
+      nnn: document.querySelector('[data-layer="nnn"]')?.checked || false,
+      natura2000:
+        document.querySelector('[data-layer="natura2000"]')?.checked || false,
+      protected:
+        document.querySelector('[data-layer="protected"]')?.checked || false,
+    };
+
+    // Add or remove layers based on checkbox state
+    Object.keys(activeLayers).forEach((layerName) => {
+      if (activeLayers[layerName]) {
+        if (!this.map.hasLayer(this.mapLayers[layerName])) {
+          this.mapLayers[layerName].addTo(this.map);
+          console.log(`[V7] Added ${layerName} layer to map`);
         }
-        
-        console.log('[V6] Initializing Leaflet map...');
-        
-        // Lelystad coordinates (approximate center between the two road sections)
-        const lelystadCenter = [52.5085, 5.4750];
-        
-        // Initialize map
-        this.map = L.map('leaflet-map', {
-            center: lelystadCenter,
-            zoom: 13,
-            zoomControl: true
-        });
-        
-        // Add OpenStreetMap base layer
-        this.baseLayers = {
-            osm: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap contributors',
-                maxZoom: 19
-            }),
-            satellite: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-                attribution: '© Esri',
-                maxZoom: 19
-            })
-        };
-        
-        // Add default base layer (satellite to match your screenshot)
-        this.baseLayers.satellite.addTo(this.map);
-        
-        // Initialize layer groups
-        this.mapLayers = {
-            provincial: L.layerGroup(),
-            municipal: L.layerGroup(),
-            nnn: L.layerGroup(),
-            natura2000: L.layerGroup(),
-            protected: L.layerGroup()
-        };
-        
-        // Add mock road data (we'll replace this with real GeoJSON later)
-        this.addMockRoadData();
-        
-        // Update layers based on current checkbox states
-        this.updateMapLayers();
-        
-        // Add scale control
-        L.control.scale({
-            imperial: false,
-            metric: true
-        }).addTo(this.map);
-        
-        // Add layer control
-        L.control.layers(
-            {
-                'Satelliet': this.baseLayers.satellite,
-                'OpenStreetMap': this.baseLayers.osm
-            },
-            null,
-            { position: 'topright' }
-        ).addTo(this.map);
-        
-        console.log('[V7] Leaflet map initialized');
-    }
-    
-    addMockRoadData() {
-        // Provincial road: Laan van Nieuw Land (blue)
-        const laanNieuwLand = L.polyline([
-            [52.5200, 5.4600],
-            [52.5150, 5.4700],
-            [52.5100, 5.4800],
-            [52.5050, 5.4900]
-        ], {
-            color: '#01689B',
-            weight: 6,
-            opacity: 0.8
-        }).bindPopup('<strong>Laan van Nieuw Land</strong><br>Provinciale weg<br>Lengte: 4.2 km');
-        
-        // Municipal road: Verlengde Westerdreef (orange)
-        const verlendeWesterdreef = L.polyline([
-            [52.5050, 5.4900],
-            [52.5020, 5.4950],
-            [52.4980, 5.5000]
-        ], {
-            color: '#F39200',
-            weight: 6,
-            opacity: 0.8
-        }).bindPopup('<strong>Verlengde Westerdreef</strong><br>Gemeentelijke weg<br>Lengte: 2.1 km');
-        
-        // NNN Corridor (green polygon)
-        const nnnCorridor = L.polygon([
-            [52.5180, 5.4650],
-            [52.5120, 5.4750],
-            [52.5080, 5.4850],
-            [52.5060, 5.4920],
-            [52.5040, 5.4860],
-            [52.5080, 5.4760],
-            [52.5140, 5.4660]
-        ], {
-            color: '#39870C',
-            fillColor: '#E8F8E8',
-            fillOpacity: 0.4,
-            weight: 3
-        }).bindPopup('<strong>NNN Corridor</strong><br>Natuurnetwerk Nederland<br>Beschermde ecologische zone');
-        
-        // Natura 2000 area (teal)
-        const natura2000Area = L.circle([52.5000, 5.5050], {
-            radius: 400,
-            color: '#7FCDBB',
-            fillColor: '#D5F4E6',
-            fillOpacity: 0.3,
-            weight: 3
-        }).bindPopup('<strong>Natura 2000 Gebied</strong><br>EU beschermd natuurgebied');
-        
-        // Protected species habitat (yellow)
-        const protectedHabitat = L.circle([52.5150, 5.4620], {
-            radius: 300,
-            color: '#FFD700',
-            fillColor: '#FFF9E6',
-            fillOpacity: 0.3,
-            weight: 3
-        }).bindPopup('<strong>Beschermde Soorten Habitat</strong><br>Vleermuizen leefgebied');
-        
-        // Add to layer groups
-        this.mapLayers.provincial.addLayer(laanNieuwLand);
-        this.mapLayers.municipal.addLayer(verlendeWesterdreef);
-        this.mapLayers.nnn.addLayer(nnnCorridor);
-        this.mapLayers.natura2000.addLayer(natura2000Area);
-        this.mapLayers.protected.addLayer(protectedHabitat);
-        
-        // Add junction marker
-        const junction = L.marker([52.5050, 5.4900], {
-            icon: L.divIcon({
-                className: 'junction-marker',
-                html: '<div style="background: #D52B1E; width: 16px; height: 16px; border-radius: 50%; border: 3px solid white;"></div>',
-                iconSize: [22, 22],
-                iconAnchor: [11, 11]
-            })
-        }).bindPopup('<strong>Knooppunt</strong><br>Overgang provinciaal-gemeentelijk');
-        
-        // Add junction to both provincial and municipal layers
-        this.mapLayers.provincial.addLayer(junction);
-    }
-    
-    updateMapLayers() {
-        if (!this.map) return;
-        
-        console.log('[V7] Updating map layers...');
-        
-        // Get active layers from checkboxes
-        const activeLayers = {
-            provincial: document.querySelector('[data-layer="provincial"]')?.checked || false,
-            municipal: document.querySelector('[data-layer="municipal"]')?.checked || false,
-            nnn: document.querySelector('[data-layer="nnn"]')?.checked || false,
-            natura2000: document.querySelector('[data-layer="natura2000"]')?.checked || false,
-            protected: document.querySelector('[data-layer="protected"]')?.checked || false
-        };
-        
-        // Add or remove layers based on checkbox state
-        Object.keys(activeLayers).forEach(layerName => {
-            if (activeLayers[layerName]) {
-                if (!this.map.hasLayer(this.mapLayers[layerName])) {
-                    this.mapLayers[layerName].addTo(this.map);
-                    console.log(`[V7] Added ${layerName} layer to map`);
-                }
-            } else {
-                if (this.map.hasLayer(this.mapLayers[layerName])) {
-                    this.map.removeLayer(this.mapLayers[layerName]);
-                    console.log(`[V7] Removed ${layerName} layer from map`);
-                }
-            }
-        });
-    }
-    
-    setupLayerControls() {
-        const toggleLayersBtn = document.getElementById('toggle-layers');
-        const layerPanel = document.getElementById('layer-panel');
-        let panelVisible = true;
-        
-        if (toggleLayersBtn) {
-            toggleLayersBtn.addEventListener('click', () => {
-                panelVisible = !panelVisible;
-                layerPanel.style.display = panelVisible ? 'block' : 'none';
-            });
+      } else {
+        if (this.map.hasLayer(this.mapLayers[layerName])) {
+          this.map.removeLayer(this.mapLayers[layerName]);
+          console.log(`[V7] Removed ${layerName} layer from map`);
         }
-        
-        const layerCheckboxes = document.querySelectorAll('.layer-checkbox');
-        layerCheckboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', (e) => {
-                const layer = e.target.dataset.layer;
-                // Use arrow function to preserve 'this' context
-                this.toggleMapLayer(layer, e.target.checked);
-            });
-        });
+      }
+    });
+  }
+
+  setupLayerControls() {
+    const toggleLayersBtn = document.getElementById("toggle-layers");
+    const layerPanel = document.getElementById("layer-panel");
+    let panelVisible = true;
+
+    if (toggleLayersBtn) {
+      toggleLayersBtn.addEventListener("click", () => {
+        panelVisible = !panelVisible;
+        layerPanel.style.display = panelVisible ? "block" : "none";
+      });
     }
-    
-    toggleMapLayer(layer, visible) {
-        console.log(`[V7] Layer ${layer} ${visible ? 'enabled' : 'disabled'}`);
-        
-        try {
-            // Update the map visualization based on layer toggles
-            console.log('[V7] Updating map layers...');
-            this.updateMapLayers();
-            
-            // Update overlap analysis to show only relevant overlaps
-            console.log('[V7] Calling renderOverlapAnalysis...');
-            this.renderOverlapAnalysis();
-            console.log('[V7] renderOverlapAnalysis completed');
-        } catch (error) {
-            console.error('[V7] Error in toggleMapLayer:', error);
-        }
+
+    const layerCheckboxes = document.querySelectorAll(".layer-checkbox");
+    layerCheckboxes.forEach((checkbox) => {
+      checkbox.addEventListener("change", (e) => {
+        const layer = e.target.dataset.layer;
+        // Use arrow function to preserve 'this' context
+        this.toggleMapLayer(layer, e.target.checked);
+      });
+    });
+  }
+
+  toggleMapLayer(layer, visible) {
+    console.log(`[V7] Layer ${layer} ${visible ? "enabled" : "disabled"}`);
+
+    try {
+      // Update the map visualization based on layer toggles
+      console.log("[V7] Updating map layers...");
+      this.updateMapLayers();
+
+      // Update overlap analysis to show only relevant overlaps
+      console.log("[V7] Calling renderOverlapAnalysis...");
+      this.renderOverlapAnalysis();
+      console.log("[V7] renderOverlapAnalysis completed");
+    } catch (error) {
+      console.error("[V7] Error in toggleMapLayer:", error);
     }
-    
-    // OLD SVG-BASED MAP VISUALIZATION (Replaced by Leaflet)
-    // Kept for reference in case we need to revert
-    /*
+  }
+
+  // OLD SVG-BASED MAP VISUALIZATION (Replaced by Leaflet)
+  // Kept for reference in case we need to revert
+  /*
     updateMapVisualization() {
         const layers = {
             provincial: document.querySelector('[data-layer="provincial"]').checked,
@@ -741,62 +579,76 @@ class LelystadDemo {
         mapContainer.innerHTML = svg;
     }
     */
-    
-    
-    renderOverlapAnalysis() {
-        console.log('[V7] === renderOverlapAnalysis START ===');
-        const container = document.getElementById('overlap-analysis');
-        
-        if (!container) {
-            console.error('[V7] overlap-analysis container not found!');
-            return;
+
+  renderOverlapAnalysis() {
+    console.log("[V7] === renderOverlapAnalysis START ===");
+    const container = document.getElementById("overlap-analysis");
+
+    if (!container) {
+      console.error("[V7] overlap-analysis container not found!");
+      return;
+    }
+
+    console.log("[V7] Container found:", container);
+
+    try {
+      // Get current active layers - explicitly get checkboxes
+      const provincialCheckbox = document.querySelector(
+        '[data-layer="provincial"]',
+      );
+      const municipalCheckbox = document.querySelector(
+        '[data-layer="municipal"]',
+      );
+      const nnnCheckbox = document.querySelector('[data-layer="nnn"]');
+      const natura2000Checkbox = document.querySelector(
+        '[data-layer="natura2000"]',
+      );
+      const protectedCheckbox = document.querySelector(
+        '[data-layer="protected"]',
+      );
+
+      console.log("Checkboxes found:", {
+        provincial: !!provincialCheckbox,
+        municipal: !!municipalCheckbox,
+        nnn: !!nnnCheckbox,
+        natura2000: !!natura2000Checkbox,
+        protected: !!protectedCheckbox,
+      });
+
+      const activeLayers = {
+        provincial: provincialCheckbox ? provincialCheckbox.checked : false,
+        municipal: municipalCheckbox ? municipalCheckbox.checked : false,
+        nnn: nnnCheckbox ? nnnCheckbox.checked : false,
+        natura2000: natura2000Checkbox ? natura2000Checkbox.checked : false,
+        protected: protectedCheckbox ? protectedCheckbox.checked : false,
+      };
+
+      console.log("Active layers:", activeLayers);
+
+      // Filter overlaps based on active layers
+      const filteredOverlaps = mockData.overlaps.filter((overlap) => {
+        // If overlap has relatedLayers, check if ALL related layers are active
+        if (overlap.relatedLayers && overlap.relatedLayers.length > 0) {
+          const shouldShow = overlap.relatedLayers.every(
+            (layer) => activeLayers[layer],
+          );
+          console.log(
+            `Overlap ${overlap.id}:`,
+            overlap.relatedLayers,
+            "→",
+            shouldShow,
+          );
+          return shouldShow;
         }
-        
-        console.log('[V7] Container found:', container);
-        
-        try {
-            // Get current active layers - explicitly get checkboxes
-            const provincialCheckbox = document.querySelector('[data-layer="provincial"]');
-            const municipalCheckbox = document.querySelector('[data-layer="municipal"]');
-            const nnnCheckbox = document.querySelector('[data-layer="nnn"]');
-            const natura2000Checkbox = document.querySelector('[data-layer="natura2000"]');
-            const protectedCheckbox = document.querySelector('[data-layer="protected"]');
-            
-            console.log('Checkboxes found:', {
-                provincial: !!provincialCheckbox,
-                municipal: !!municipalCheckbox,
-                nnn: !!nnnCheckbox,
-                natura2000: !!natura2000Checkbox,
-                protected: !!protectedCheckbox
-            });
-            
-            const activeLayers = {
-                provincial: provincialCheckbox ? provincialCheckbox.checked : false,
-                municipal: municipalCheckbox ? municipalCheckbox.checked : false,
-                nnn: nnnCheckbox ? nnnCheckbox.checked : false,
-                natura2000: natura2000Checkbox ? natura2000Checkbox.checked : false,
-                protected: protectedCheckbox ? protectedCheckbox.checked : false
-            };
-            
-            console.log('Active layers:', activeLayers);
-            
-            // Filter overlaps based on active layers
-            const filteredOverlaps = mockData.overlaps.filter(overlap => {
-                // If overlap has relatedLayers, check if ALL related layers are active
-                if (overlap.relatedLayers && overlap.relatedLayers.length > 0) {
-                    const shouldShow = overlap.relatedLayers.every(layer => activeLayers[layer]);
-                    console.log(`Overlap ${overlap.id}:`, overlap.relatedLayers, '→', shouldShow);
-                    return shouldShow;
-                }
-                // If no relatedLayers specified, always show (backwards compatibility)
-                return true;
-            });
-            
-            console.log('Filtered overlaps count:', filteredOverlaps.length);
-        
-        // Show message if no overlaps match the current layer selection
-        if (filteredOverlaps.length === 0) {
-            container.innerHTML = `
+        // If no relatedLayers specified, always show (backwards compatibility)
+        return true;
+      });
+
+      console.log("Filtered overlaps count:", filteredOverlaps.length);
+
+      // Show message if no overlaps match the current layer selection
+      if (filteredOverlaps.length === 0) {
+        container.innerHTML = `
                 <div style="padding: var(--space-xl); text-align: center; color: var(--color-text-muted);">
                     <svg width="48" height="48" fill="currentColor" viewBox="0 0 20 20" style="opacity: 0.3; margin-bottom: var(--space-md);">
                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"/>
@@ -807,10 +659,12 @@ class LelystadDemo {
                     </p>
                 </div>
             `;
-            return;
-        }
-        
-        const html = filteredOverlaps.map(overlap => `
+        return;
+      }
+
+      const html = filteredOverlaps
+        .map(
+          (overlap) => `
             <div class="overlap-item">
                 <div class="overlap-header">
                     <div class="overlap-icon">
@@ -823,23 +677,29 @@ class LelystadDemo {
                         <div style="display: flex; gap: var(--space-md); margin-top: var(--space-xs); flex-wrap: wrap;">
                             <span class="badge badge-warning">Coördinatie Vereist</span>
                             <span class="badge badge-info">${overlap.authority}</span>
-                            ${overlap.relatedLayers ? overlap.relatedLayers.map(layer => {
-                                const layerNames = {
-                                    'provincial': 'Provinciaal',
-                                    'municipal': 'Gemeentelijk',
-                                    'nnn': 'NNN',
-                                    'natura2000': 'Natura 2000',
-                                    'protected': 'Beschermd Habitat'
-                                };
-                                const layerColors = {
-                                    'provincial': '#01689B',
-                                    'municipal': '#F39200',
-                                    'nnn': '#39870C',
-                                    'natura2000': '#7FCDBB',
-                                    'protected': '#FFD700'
-                                };
-                                return `<span class="badge" style="background-color: ${layerColors[layer]}; color: white; font-size: var(--font-size-xs);">${layerNames[layer]}</span>`;
-                            }).join('') : ''}
+                            ${
+                              overlap.relatedLayers
+                                ? overlap.relatedLayers
+                                    .map((layer) => {
+                                      const layerNames = {
+                                        provincial: "Provinciaal",
+                                        municipal: "Gemeentelijk",
+                                        nnn: "NNN",
+                                        natura2000: "Natura 2000",
+                                        protected: "Beschermd Habitat",
+                                      };
+                                      const layerColors = {
+                                        provincial: "#01689B",
+                                        municipal: "#F39200",
+                                        nnn: "#39870C",
+                                        natura2000: "#7FCDBB",
+                                        protected: "#FFD700",
+                                      };
+                                      return `<span class="badge" style="background-color: ${layerColors[layer]}; color: white; font-size: var(--font-size-xs);">${layerNames[layer]}</span>`;
+                                    })
+                                    .join("")
+                                : ""
+                            }
                         </div>
                     </div>
                 </div>
@@ -847,112 +707,128 @@ class LelystadDemo {
                 <div style="margin: var(--space-md) 0;">
                     <strong style="font-size: var(--font-size-sm); color: var(--color-text-secondary);">Betrokken Wegvakken:</strong>
                     <ul style="margin: var(--space-sm) 0 0 var(--space-lg); color: var(--color-text-secondary); font-size: var(--font-size-sm);">
-                        ${overlap.affectedSections.map(section => `<li>${section}</li>`).join('')}
+                        ${overlap.affectedSections.map((section) => `<li>${section}</li>`).join("")}
                     </ul>
                 </div>
                 <div class="overlap-requirements">
                     <strong style="font-size: var(--font-size-sm); color: var(--color-text-secondary); display: block; margin-bottom: var(--space-sm);">Gerelateerde Eisen:</strong>
-                    ${overlap.requirements.map(reqId => {
-                        const req = mockData.requirements.find(r => r.id === reqId);
-                        return req ? `
+                    ${overlap.requirements
+                      .map((reqId) => {
+                        const req = mockData.requirements.find(
+                          (r) => r.id === reqId,
+                        );
+                        return req
+                          ? `
                             <a href="#" class="requirement-link" onclick="event.preventDefault(); demo.viewRequirementDetails('${req.id}');">
                                 <svg width="14" height="14" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z"/>
                                 </svg>
                                 ${req.title}
                             </a>
-                        ` : '';
-                    }).join('')}
+                        `
+                          : "";
+                      })
+                      .join("")}
                 </div>
-                ${overlap.notes ? `
+                ${
+                  overlap.notes
+                    ? `
                     <div style="margin-top: var(--space-md); padding: var(--space-md); background-color: var(--color-info-light); border-radius: var(--radius-md);">
                         <strong style="font-size: var(--font-size-sm); color: var(--color-info);">📋 Opmerking:</strong>
                         <p style="margin: var(--space-xs) 0 0 0; font-size: var(--font-size-sm); color: var(--color-text);">${overlap.notes}</p>
                     </div>
-                ` : ''}
+                `
+                    : ""
+                }
             </div>
-        `).join('');
-        
-        // Add summary header
-        const summaryHtml = `
+        `,
+        )
+        .join("");
+
+      // Add summary header
+      const summaryHtml = `
             <div style="padding: var(--space-md); background-color: var(--color-background); border-radius: var(--radius-md); margin-bottom: var(--space-lg); border-left: 4px solid var(--color-primary);">
                 <strong style="color: var(--color-primary);">
-                    ${filteredOverlaps.length} overlapping${filteredOverlaps.length === 1 ? '' : 'en'} gevonden
+                    ${filteredOverlaps.length} overlapping${filteredOverlaps.length === 1 ? "" : "en"} gevonden
                 </strong>
                 <p style="font-size: var(--font-size-sm); color: var(--color-text-muted); margin-top: var(--space-xs);">
                     Gebaseerd op de huidige kaartlaag selectie
                 </p>
             </div>
         `;
-        
-        container.innerHTML = summaryHtml + html;
-        console.log('=== renderOverlapAnalysis COMPLETE ===');
-        } catch (error) {
-            console.error('Error in renderOverlapAnalysis:', error);
-        }
+
+      container.innerHTML = summaryHtml + html;
+      console.log("=== renderOverlapAnalysis COMPLETE ===");
+    } catch (error) {
+      console.error("Error in renderOverlapAnalysis:", error);
     }
-    // USE CASE E: KNOWLEDGE GRAPH EXPLORER
-    renderKnowledgeGraph() {
-        this.setupEntryPoints();
-        this.setupGraphControls();
-        this.renderInitialGraph();
+  }
+  // USE CASE E: KNOWLEDGE GRAPH EXPLORER
+  renderKnowledgeGraph() {
+    this.setupEntryPoints();
+    this.setupGraphControls();
+    this.renderInitialGraph();
+  }
+
+  setupEntryPoints() {
+    const entryCards = document.querySelectorAll(".entry-point-card");
+    entryCards.forEach((card) => {
+      card.addEventListener("click", (e) => {
+        const conceptId = e.currentTarget.dataset.concept;
+
+        // Visual feedback - highlight selected card
+        entryCards.forEach(
+          (c) => (c.style.borderColor = "var(--color-border)"),
+        );
+        e.currentTarget.style.borderColor = "var(--color-primary)";
+        e.currentTarget.style.borderWidth = "3px";
+
+        this.selectStartNode(conceptId);
+      });
+    });
+  }
+
+  setupGraphControls() {
+    const closeBtn = document.getElementById("close-details");
+    if (closeBtn) {
+      closeBtn.addEventListener("click", () => {
+        document.getElementById("node-details").style.display = "none";
+      });
     }
-    
-    setupEntryPoints() {
-        const entryCards = document.querySelectorAll('.entry-point-card');
-        entryCards.forEach(card => {
-            card.addEventListener('click', (e) => {
-                const conceptId = e.currentTarget.dataset.concept;
-                
-                // Visual feedback - highlight selected card
-                entryCards.forEach(c => c.style.borderColor = 'var(--color-border)');
-                e.currentTarget.style.borderColor = 'var(--color-primary)';
-                e.currentTarget.style.borderWidth = '3px';
-                
-                this.selectStartNode(conceptId);
-            });
+
+    const copyBtn = document.getElementById("copy-query");
+    if (copyBtn) {
+      copyBtn.addEventListener("click", () => {
+        const queryText = document.querySelector(
+          "#sparql-query-display code",
+        ).textContent;
+        navigator.clipboard.writeText(queryText).then(() => {
+          alert("SPARQL query gekopieerd naar klembord!");
         });
+      });
     }
-    
-    setupGraphControls() {
-        const closeBtn = document.getElementById('close-details');
-        if (closeBtn) {
-            closeBtn.addEventListener('click', () => {
-                document.getElementById('node-details').style.display = 'none';
-            });
-        }
-        
-        const copyBtn = document.getElementById('copy-query');
-        if (copyBtn) {
-            copyBtn.addEventListener('click', () => {
-                const queryText = document.querySelector('#sparql-query-display code').textContent;
-                navigator.clipboard.writeText(queryText).then(() => {
-                    alert('SPARQL query gekopieerd naar klembord!');
-                });
-            });
-        }
-    }
-    
-    selectStartNode(conceptId) {
-        // Find the node
-        const node = mockData.knowledgeGraph.nodes.find(n => n.id === conceptId);
-        if (!node) return;
-        
-        // Render graph from this node
-        this.renderGraphFromNode(node);
-        
-        // Show node details
-        this.showNodeDetails(node);
-        
-        // Update SPARQL query
-        this.updateSparqlQuery(node);
-    }
-    
-    renderInitialGraph() {
-        const container = document.getElementById('knowledge-graph-container');
-        
-        // Create a welcoming initial state with visual elements
-        container.innerHTML = `
+  }
+
+  selectStartNode(conceptId) {
+    // Find the node
+    const node = mockData.knowledgeGraph.nodes.find((n) => n.id === conceptId);
+    if (!node) return;
+
+    // Render graph from this node
+    this.renderGraphFromNode(node);
+
+    // Show node details
+    this.showNodeDetails(node);
+
+    // Update SPARQL query
+    this.updateSparqlQuery(node);
+  }
+
+  renderInitialGraph() {
+    const container = document.getElementById("knowledge-graph-container");
+
+    // Create a welcoming initial state with visual elements
+    container.innerHTML = `
             <svg class="graph-canvas" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
                 <defs>
                     <marker id="arrowhead" markerWidth="10" markerHeight="7" 
@@ -1000,29 +876,29 @@ class LelystadDemo {
                 </text>
             </svg>
         `;
-    }
-    
-    renderGraphFromNode(startNode) {
-        const container = document.getElementById('knowledge-graph-container');
-        
-        // Add fade effect
-        container.style.opacity = '0.3';
-        setTimeout(() => {
-            container.style.opacity = '1';
-        }, 100);
-        
-        // Get related nodes
-        const relatedNodeIds = startNode.relations.map(r => r.targetId);
-        const relatedNodes = mockData.knowledgeGraph.nodes.filter(n => 
-            relatedNodeIds.includes(n.id)
-        );
-        
-        // Create simple radial layout
-        const centerX = 400;
-        const centerY = 300;
-        const radius = 200;
-        
-        let svg = `
+  }
+
+  renderGraphFromNode(startNode) {
+    const container = document.getElementById("knowledge-graph-container");
+
+    // Add fade effect
+    container.style.opacity = "0.3";
+    setTimeout(() => {
+      container.style.opacity = "1";
+    }, 100);
+
+    // Get related nodes
+    const relatedNodeIds = startNode.relations.map((r) => r.targetId);
+    const relatedNodes = mockData.knowledgeGraph.nodes.filter((n) =>
+      relatedNodeIds.includes(n.id),
+    );
+
+    // Create simple radial layout
+    const centerX = 400;
+    const centerY = 300;
+    const radius = 200;
+
+    let svg = `
             <svg class="graph-canvas" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
                 <defs>
                     <marker id="arrowhead" markerWidth="10" markerHeight="7" 
@@ -1031,14 +907,14 @@ class LelystadDemo {
                     </marker>
                 </defs>
         `;
-        
-        // Draw edges
-        startNode.relations.forEach((relation, i) => {
-            const angle = (2 * Math.PI * i) / startNode.relations.length;
-            const targetX = centerX + radius * Math.cos(angle);
-            const targetY = centerY + radius * Math.sin(angle);
-            
-            svg += `
+
+    // Draw edges
+    startNode.relations.forEach((relation, i) => {
+      const angle = (2 * Math.PI * i) / startNode.relations.length;
+      const targetX = centerX + radius * Math.cos(angle);
+      const targetY = centerY + radius * Math.sin(angle);
+
+      svg += `
                 <line x1="${centerX}" y1="${centerY}" 
                       x2="${targetX}" y2="${targetY}" 
                       stroke="#CACACA" stroke-width="2" 
@@ -1051,16 +927,16 @@ class LelystadDemo {
                     ${relation.label}
                 </text>
             `;
-        });
-        
-        // Draw related nodes
-        relatedNodes.forEach((node, i) => {
-            const angle = (2 * Math.PI * i) / relatedNodes.length;
-            const x = centerX + radius * Math.cos(angle);
-            const y = centerY + radius * Math.sin(angle);
-            const color = this.getNodeColor(node.type);
-            
-            svg += `
+    });
+
+    // Draw related nodes
+    relatedNodes.forEach((node, i) => {
+      const angle = (2 * Math.PI * i) / relatedNodes.length;
+      const x = centerX + radius * Math.cos(angle);
+      const y = centerY + radius * Math.sin(angle);
+      const color = this.getNodeColor(node.type);
+
+      svg += `
                 <g class="graph-node" style="cursor: pointer;" 
                    onclick="demo.selectGraphNode('${node.id}')">
                     <circle cx="${x}" cy="${y}" r="30" 
@@ -1077,11 +953,11 @@ class LelystadDemo {
                     </text>
                 </g>
             `;
-        });
-        
-        // Draw center node (start node) - larger and prominent
-        const centerColor = this.getNodeColor(startNode.type);
-        svg += `
+    });
+
+    // Draw center node (start node) - larger and prominent
+    const centerColor = this.getNodeColor(startNode.type);
+    svg += `
             <g class="graph-node">
                 <circle cx="${centerX}" cy="${centerY}" r="45" 
                         fill="${centerColor}" 
@@ -1112,43 +988,43 @@ class LelystadDemo {
                 </text>
             </g>
         `;
-        
-        svg += `</svg>`;
-        container.innerHTML = svg;
-    }
-    
-    getNodeColor(type) {
-        const colors = {
-            'WorkProtocol': '#39870C',
-            'MitigatingMeasure': '#7FCDBB',
-            'Regulation': '#01689B',
-            'Requirement': '#F39200',
-            'RoadSection': '#154273',
-            'Role': '#D52B1E',
-            'ComplianceCheckpoint': '#FFD700'
-        };
-        return colors[type] || '#CACACA';
-    }
-    
-    truncateLabel(label, maxLength) {
-        if (label.length <= maxLength) return label;
-        return label.substring(0, maxLength - 3) + '...';
-    }
-    
-    selectGraphNode(nodeId) {
-        const node = mockData.knowledgeGraph.nodes.find(n => n.id === nodeId);
-        if (!node) return;
-        
-        this.showNodeDetails(node);
-        this.renderGraphFromNode(node);
-        this.updateSparqlQuery(node);
-    }
-    
-    showNodeDetails(node) {
-        const detailsPanel = document.getElementById('node-details');
-        const content = document.getElementById('node-details-content');
-        
-        let html = `
+
+    svg += `</svg>`;
+    container.innerHTML = svg;
+  }
+
+  getNodeColor(type) {
+    const colors = {
+      WorkProtocol: "#39870C",
+      MitigatingMeasure: "#7FCDBB",
+      Regulation: "#01689B",
+      Requirement: "#F39200",
+      RoadSection: "#154273",
+      Role: "#D52B1E",
+      ComplianceCheckpoint: "#FFD700",
+    };
+    return colors[type] || "#CACACA";
+  }
+
+  truncateLabel(label, maxLength) {
+    if (label.length <= maxLength) return label;
+    return label.substring(0, maxLength - 3) + "...";
+  }
+
+  selectGraphNode(nodeId) {
+    const node = mockData.knowledgeGraph.nodes.find((n) => n.id === nodeId);
+    if (!node) return;
+
+    this.showNodeDetails(node);
+    this.renderGraphFromNode(node);
+    this.updateSparqlQuery(node);
+  }
+
+  showNodeDetails(node) {
+    const detailsPanel = document.getElementById("node-details");
+    const content = document.getElementById("node-details-content");
+
+    let html = `
             <div class="detail-section">
                 <div class="detail-label">Type</div>
                 <div class="detail-value">
@@ -1173,47 +1049,53 @@ class LelystadDemo {
                 <div class="detail-value">${node.description}</div>
             </div>
         `;
-        
-        if (node.source) {
-            html += `
+
+    if (node.source) {
+      html += `
                 <div class="detail-section">
                     <div class="detail-label">Bron</div>
                     <div class="detail-value">
-                        ${node.source.startsWith('http') ? 
-                            `<a href="${node.source}" target="_blank" style="color: var(--color-primary);">${node.source}</a>` :
-                            node.source
+                        ${
+                          node.source.startsWith("http")
+                            ? `<a href="${node.source}" target="_blank" style="color: var(--color-primary);">${node.source}</a>`
+                            : node.source
                         }
                     </div>
                 </div>
             `;
-        }
-        
-        if (node.jurisdiction) {
-            html += `
+    }
+
+    if (node.jurisdiction) {
+      html += `
                 <div class="detail-section">
                     <div class="detail-label">Jurisdictie</div>
                     <div class="detail-value">${node.jurisdiction}</div>
                 </div>
             `;
-        }
-        
-        if (node.organization) {
-            html += `
+    }
+
+    if (node.organization) {
+      html += `
                 <div class="detail-section">
                     <div class="detail-label">Organisatie</div>
                     <div class="detail-value">${node.organization}</div>
                 </div>
             `;
-        }
-        
-        if (node.relations && node.relations.length > 0) {
-            html += `
+    }
+
+    if (node.relations && node.relations.length > 0) {
+      html += `
                 <div class="detail-section">
                     <div class="detail-label">Relaties (${node.relations.length})</div>
                     <div class="relation-list">
-                        ${node.relations.map(rel => {
-                            const targetNode = mockData.knowledgeGraph.nodes.find(n => n.id === rel.targetId);
-                            return targetNode ? `
+                        ${node.relations
+                          .map((rel) => {
+                            const targetNode =
+                              mockData.knowledgeGraph.nodes.find(
+                                (n) => n.id === rel.targetId,
+                              );
+                            return targetNode
+                              ? `
                                 <div class="relation-item">
                                     <span class="relation-type">${rel.label}</span>
                                     <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20" style="color: var(--color-text-muted);">
@@ -1225,24 +1107,26 @@ class LelystadDemo {
                                         ${targetNode.label}
                                     </button>
                                 </div>
-                            ` : '';
-                        }).join('')}
+                            `
+                              : "";
+                          })
+                          .join("")}
                     </div>
                 </div>
             `;
-        }
-        
-        content.innerHTML = html;
-        detailsPanel.style.display = 'block';
-        
-        // Scroll to details
-        detailsPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
-    
-    updateSparqlQuery(node) {
-        const queryDisplay = document.querySelector('#sparql-query-display code');
-        
-        const query = `# SPARQL query voor navigatie vanaf: ${node.label}
+
+    content.innerHTML = html;
+    detailsPanel.style.display = "block";
+
+    // Scroll to details
+    detailsPanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+
+  updateSparqlQuery(node) {
+    const queryDisplay = document.querySelector("#sparql-query-display code");
+
+    const query = `# SPARQL query voor navigatie vanaf: ${node.label}
 PREFIX flvl: <https://data.flevoland.nl/lelystad-ringweg/>
 PREFIX flvl-def: <https://data.flevoland.nl/def/>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
@@ -1270,16 +1154,16 @@ WHERE {
 }
 ORDER BY ?relationLabel ?label
 LIMIT 20`;
-        
-        queryDisplay.textContent = query;
-    }
+
+    queryDisplay.textContent = query;
+  }
 }
 
 // Initialize the demo when DOM is loaded
 let demo;
-document.addEventListener('DOMContentLoaded', () => {
-    demo = new LelystadDemo();
-    window.demo = demo; // Make globally accessible for debugging
-    console.log('[V7] Lelystad Ringweg Demonstrator geladen');
-    console.log('[V7] Demo object:', demo);
+document.addEventListener("DOMContentLoaded", () => {
+  demo = new LelystadDemo();
+  window.demo = demo; // Make globally accessible for debugging
+  console.log("[V8] Lelystad Ringweg Demonstrator geladen"); // Changed from V7 to V8
+  console.log("[V8] Demo object:", demo);
 });

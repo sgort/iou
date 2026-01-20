@@ -1,39 +1,80 @@
-// ====================================================================================
-// STEP 1: Add this to your data.js file (or keep in app.js)
-// ====================================================================================
+// ============================================================================
+// REAL ROAD GEOMETRY (Sample coordinates for planned roads)
+// ============================================================================
+// Source: Geographically accurate approximation based on project plans
+// Status: Planned roads (not yet in PDOK NWB database)
+// Note: Replace with actual PDOK data once roads are constructed
+// ============================================================================
 
 const realRoadData = {
-    // Laan van Nieuw Land - Provincial road (4.2 km)
+    // Provincial road: Laan van Nieuw Land (4.2 km)
+    // Blue polyline - runs north-south through Lelystad Zuid
     laanVanNieuwLand: [
-        [52.4980, 5.4720], [52.4990, 5.4728], [52.5000, 5.4735],
-        [52.5010, 5.4740], [52.5020, 5.4742], [52.5030, 5.4745],
-        [52.5040, 5.4748], [52.5050, 5.4750], [52.5060, 5.4753],
-        [52.5070, 5.4755], [52.5080, 5.4757], [52.5090, 5.4760],
-        [52.5100, 5.4763], [52.5110, 5.4765], [52.5120, 5.4768],
-        [52.5130, 5.4770], [52.5140, 5.4773], [52.5150, 5.4775],
-        [52.5160, 5.4778], [52.5170, 5.4780], [52.5180, 5.4783],
-        [52.5190, 5.4785], [52.5200, 5.4788], [52.5210, 5.4790],
-        [52.5220, 5.4795]
+        [52.4980, 5.4720], // Southern start (near Warande)
+        [52.4990, 5.4728],
+        [52.5000, 5.4735],
+        [52.5010, 5.4740],
+        [52.5020, 5.4742],
+        [52.5030, 5.4745],
+        [52.5040, 5.4748],
+        [52.5050, 5.4750],
+        [52.5060, 5.4753],
+        [52.5070, 5.4755],
+        [52.5080, 5.4757],
+        [52.5090, 5.4760],
+        [52.5100, 5.4763],
+        [52.5110, 5.4765],
+        [52.5120, 5.4768],
+        [52.5130, 5.4770],
+        [52.5140, 5.4773],
+        [52.5150, 5.4775],
+        [52.5160, 5.4778],
+        [52.5170, 5.4780],
+        [52.5180, 5.4783],
+        [52.5190, 5.4785],
+        [52.5200, 5.4788],
+        [52.5210, 5.4790],
+        [52.5220, 5.4795]  // Northern end (near N309)
     ],
 
-    // Verlengde Westerdreef - Municipal road (2.1 km)
+    // Municipal road: Verlengde Westerdreef (2.1 km)
+    // Orange polyline - runs east-west connecting to Laan van Nieuw Land
     verlengdeWesterdreef: [
-        [52.5085, 5.4580], [52.5088, 5.4600], [52.5090, 5.4620],
-        [52.5092, 5.4640], [52.5093, 5.4660], [52.5094, 5.4680],
-        [52.5095, 5.4700], [52.5095, 5.4720], [52.5095, 5.4740],
-        [52.5095, 5.4760]
+        [52.5085, 5.4580], // Western start
+        [52.5088, 5.4600],
+        [52.5090, 5.4620],
+        [52.5092, 5.4640],
+        [52.5093, 5.4660],
+        [52.5094, 5.4680],
+        [52.5095, 5.4700],
+        [52.5095, 5.4720],
+        [52.5095, 5.4740],
+        [52.5095, 5.4760]  // Eastern end (junction)
     ],
 
-    // Ecological zones
+    // Junction point where roads meet
+    junction: [52.5095, 5.4760],
+
+    // NNN Corridor polygon (ecological zone)
     nnnCorridor: [
-        [52.5050, 5.4680], [52.5150, 5.4680],
-        [52.5150, 5.4820], [52.5050, 5.4820],
+        [52.5050, 5.4680],
+        [52.5150, 5.4680],
+        [52.5150, 5.4820],
+        [52.5050, 5.4820],
         [52.5050, 5.4680]
     ],
 
-    natura2000: { center: [52.5140, 5.4900], radius: 800 },
-    protectedHabitat: { center: [52.5060, 5.4720], radius: 500 },
-    junction: [52.5095, 5.4760]
+    // Natura 2000 area (circular zone)
+    natura2000: {
+        center: [52.5140, 5.4900],
+        radius: 800  // meters
+    },
+
+    // Protected habitat (circular zone)
+    protectedHabitat: {
+        center: [52.5060, 5.4720],
+        radius: 500  // meters
+    }
 };
 
 // Mock data for Lelystad Ringweg Demonstrator
@@ -52,7 +93,7 @@ const mockData = {
             responsible: "M. van den Berg (Ecoloog)",
             deadline: "2025-03-15",
             description: "Alle werkzaamheden binnen 25m van NNN-grenzen vereisen ecologische impact mitigatie",
-            regulation: "Natuurnetwerk Nederland Wet 2024",
+            regulation: "Natuurnetwerk Nederland Wet 2026",
             checkpoints: ["Ecologische survey", "Mitigatie plan goedkeuring"]
         },
         {
@@ -78,7 +119,7 @@ const mockData = {
             domainId: "natura2000",
             status: "compliant",
             responsible: "Dr. P. Jansen (Senior Ecoloog)",
-            deadline: "2024-12-20",
+            deadline: "2026-12-20",
             description: "Verplichte passende beoordeling voor activiteiten binnen 500m van N2000-gebied",
             regulation: "Natuurbeschermingswet 1998, Art. 19j",
             checkpoints: ["Beoordeling ingediend", "Goedgekeurd door provincie"]
@@ -106,7 +147,7 @@ const mockData = {
             domainId: "spatial-planning",
             status: "compliant",
             responsible: "A. de Vries (Gemeente Lelystad)",
-            deadline: "2024-11-30",
+            deadline: "2026-11-30",
             description: "Aanpassing bestemmingsplan conform omgevingsvisie",
             regulation: "Omgevingswet, Hoofdstuk 3",
             checkpoints: ["Raadsbesluit", "Publicatie DSO"]
@@ -148,7 +189,7 @@ const mockData = {
             domainId: "environment",
             status: "overdue",
             responsible: "H. Visser (Akoestisch adviseur)",
-            deadline: "2024-12-01",
+            deadline: "2026-12-01",
             description: "Plaatsing geluidschermen conform geluidsnormen Omgevingswet",
             regulation: "Omgevingswet, Geluidsnormen Bijlage IV",
             checkpoints: ["Akoestisch onderzoek", "Ontwerp schermen"]
@@ -162,7 +203,7 @@ const mockData = {
             domainId: "environment",
             status: "compliant",
             responsible: "M. Koning (MilieucoÃ¶rdinator)",
-            deadline: "2024-10-15",
+            deadline: "2026-10-15",
             description: "Nulmeting luchtkwaliteit voor aanvang bouwwerkzaamheden",
             regulation: "Wet milieubeheer, Hoofdstuk 5",
             checkpoints: ["Nulmeting uitgevoerd", "Rapport goedgekeurd"]
@@ -190,7 +231,7 @@ const mockData = {
             domainId: "heritage",
             status: "compliant",
             responsible: "Dr. E. Mulder (Archeoloog)",
-            deadline: "2024-09-30",
+            deadline: "2026-09-30",
             description: "Verplicht archeologisch vooronderzoek conform KNA protocol",
             regulation: "Erfgoedwet Art. 4.2",
             checkpoints: ["Bureauonderzoek", "Veldonderzoek", "Rapport"]
@@ -206,7 +247,7 @@ const mockData = {
             responsible: "Project Overleg P&G",
             deadline: "2025-03-01",
             description: "Afstemming tussen provinciale en gemeentelijke wegdelen bij knooppunt",
-            regulation: "Samenwerkingsovereenkomst 2024-001",
+            regulation: "Samenwerkingsovereenkomst 2026-001",
             checkpoints: ["Technisch ontwerp afgestemd", "Fasering afgesproken"]
         },
         {
@@ -232,7 +273,7 @@ const mockData = {
             domainId: "environment",
             status: "overdue",
             responsible: "T. van Dam (Bodemkundig adviseur)",
-            deadline: "2024-11-15",
+            deadline: "2026-11-15",
             description: "Historisch bodemonderzoek en eventuele sanering",
             regulation: "Wet bodembescherming Art. 28",
             checkpoints: ["Vooronderzoek", "Nader onderzoek indien nodig"]
@@ -248,7 +289,7 @@ const mockData = {
             responsible: "Ing. W. Bakker (Milieuadviseur)",
             deadline: "2025-04-01",
             description: "Intern salderen of externe compensatie voor stikstofuitstoot",
-            regulation: "PAS-instrumentarium 2024",
+            regulation: "PAS-instrumentarium 2026",
             checkpoints: ["Stikstofdepositieberekening", "Compensatieplan"]
         },
         {
@@ -260,7 +301,7 @@ const mockData = {
             domainId: "traffic",
             status: "compliant",
             responsible: "Veiligheidsregio Flevoland",
-            deadline: "2024-10-30",
+            deadline: "2026-10-30",
             description: "Plan voor veilige toegankelijkheid hulpdiensten",
             regulation: "Besluit externe veiligheid inrichtingen",
             checkpoints: ["Calamiteitenplan", "Goedkeuring veiligheidsregio"]
@@ -302,7 +343,7 @@ const mockData = {
             domainId: "coordination",
             status: "compliant",
             responsible: "Communicatieadviseur Gemeente",
-            deadline: "2024-12-15",
+            deadline: "2026-12-15",
             description: "Informatiebijeenkomsten en inspraakmogelijkheden bewoners",
             regulation: "Omgevingswet, Hoofdstuk 16",
             checkpoints: ["Informatiebijeenkomst 1", "Informatiebijeenkomst 2"]
@@ -355,7 +396,7 @@ const mockData = {
                 label: "Ecologisch Werkprotocol",
                 category: "Protocol",
                 description: "Richtlijnen voor het beschermen van flora en fauna tijdens werkzaamheden",
-                source: "Provinciale Gedragscode Infrastructuur 2024",
+                source: "Provinciale Gedragscode Infrastructuur 2026",
                 relations: [
                     { targetId: "concept-nnn-measure", type: "vereist", label: "vereist" },
                     { targetId: "concept-natura2000-measure", type: "vereist", label: "vereist" },
@@ -408,7 +449,7 @@ const mockData = {
             {
                 id: "reg-nnn-wet",
                 type: "Regulation",
-                label: "Natuurnetwerk Nederland Wet 2024",
+                label: "Natuurnetwerk Nederland Wet 2026",
                 category: "Regelgeving",
                 description: "Nationale wetgeving voor bescherming en ontwikkeling van het ecologische netwerk",
                 source: "https://wetten.overheid.nl/BWBR0045123",
@@ -578,7 +619,7 @@ const mockData = {
                 label: "Natura 2000 Beoordeling Goedgekeurd",
                 category: "Checkpoint",
                 description: "Passende beoordeling goedgekeurd door provincie",
-                deadline: "2024-12-20",
+                deadline: "2026-12-20",
                 relations: [
                     { targetId: "req-n2k-001", type: "valideert", label: "valideert" },
                     { targetId: "role-senior-ecologist", type: "goedgekeurdDoor", label: "goedgekeurd door" }

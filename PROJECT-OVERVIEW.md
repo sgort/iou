@@ -138,7 +138,7 @@ Een complete, klaar-voor-deployment statische web demonstrator die drie kerngebr
 Representeren realistische compliance vereisten met:
 - Volledige Nederlandse beschrijvingen
 - Echte wetsverwijzingen (Natuurbeschermingswet, Flora-faunawet, etc.)
-- Realistische deadlines (2024-2025)
+- Realistische deadlines (2026-2025)
 - Authentieke rolnamen (Ecoloog, Projectmanager, etc.)
 - Multi-domain coverage
 

@@ -18,7 +18,7 @@ const realRoadCoordinatesSample = {
         note: 'Replace with actual PDOK NWB data for production',
         crs: 'EPSG:4326 (WGS84)',
         center: [52.5085, 5.4750],
-        date: '2024-11-11',
+        date: '2026-11-11',
         production_ready: false
     },
 
