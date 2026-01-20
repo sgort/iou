@@ -253,7 +253,7 @@ flvl-sp:InfrastructureProject
     skos:scopeNote """Models provincial-scale road construction as a public 
     service delivery mechanism, leveraging CPSV-AP properties for regulatory 
     requirements, stakeholder roles, and compliance verification."""@en ;
-    dcterms:created "2024-11-08"^^xsd:date .
+    dcterms:created "2026-11-08"^^xsd:date .
 
 # Properties inherited from cpsv:PublicService:
 # - cpsv:hasLegalResource (links to regulations)
@@ -267,7 +267,7 @@ flvl-sp:InfrastructureProject
 ```turtle
 flvl-id:LelystadRingwegProject 
     a flvl-sp:InfrastructureProject ;
-    dcterms:identifier "FLVL-INFRA-2024-001" ;
+    dcterms:identifier "FLVL-INFRA-2026-001" ;
     dcterms:title "Lelystad-Zuid Ring Road Project"@en ;
     dcterms:title "Lelystad-Zuid Ringwegproject"@nl ;
     dcterms:description """Construction of bypass road around Lelystad-Zuid 
@@ -279,9 +279,9 @@ flvl-id:LelystadRingwegProject
     cpsv:hasParticipant flvl-id:MunicipalityLelystad ;
     
     # Project specifics
-    flvl-sp:projectCode "LZ-RING-2024" ;
+    flvl-sp:projectCode "LZ-RING-2026" ;
     flvl-sp:projectPhase "planning"@en ;
-    flvl-sp:startDate "2024-01-01"^^xsd:date ;
+    flvl-sp:startDate "2026-01-01"^^xsd:date ;
     flvl-sp:expectedCompletion "2027-12-31"^^xsd:date ;
     flvl-sp:totalBudgetEuros "45000000"^^xsd:decimal ;
     
@@ -292,8 +292,8 @@ flvl-id:LelystadRingwegProject
     
     # Regulatory compliance
     cpsv:hasLegalResource 
-        flvl-id:NaturaWet_v2024-01 ,
-        flvl-id:Omgevingswet_v2024 ,
+        flvl-id:NaturaWet_v2026-01 ,
+        flvl-id:Omgevingswet_v2026 ,
         flvl-id:LelystadEnvironmentalVision ;
     
     flvl-def:requiresMeasure 
@@ -450,7 +450,7 @@ flvl-id:measure-nnn-ecological-survey
     flvl-def:prerequisiteOf flvl-id:measure-nnn-mitigation-plan ;
     
     prov:wasAttributedTo flvl-id:expert-environmental-consultant-bruin ;
-    dcterms:created "2024-11-05"^^xsd:date .
+    dcterms:created "2026-11-05"^^xsd:date .
 ```
 
 ### 1.3.4 Regulatory Compliance Concepts
@@ -520,15 +520,15 @@ flvl-id:req-nnn-001
     flvl-def:delegationAuthority "Provincial authority for approving ecological mitigation plans"@en ;
     
     # === SOURCE TRACEABILITY ===
-    dcterms:source flvl-id:NaturaWet_v2024-01 ;
-    cprmv:extends "BWBR0037552_2024-01-01_0/Artikel_12/Lid_3" ;
+    dcterms:source flvl-id:NaturaWet_v2026-01 ;
+    cprmv:extends "BWBR0037552_2026-01-01_0/Artikel_12/Lid_3" ;
     
     # === COMPLIANCE LINKAGE ===
     flvl-def:requiresMeasure flvl-id:measure-nnn-ecological-survey ;
     flvl-def:hasCheckpoint flvl-id:checkpoint-nnn-approval ;
     flvl-def:affectsLocation flvl-id:LaanVanNieuwLand ;
     
-    dcterms:created "2024-11-05"^^xsd:date ;
+    dcterms:created "2026-11-05"^^xsd:date ;
     dcterms:creator flvl-id:expert-environmental-law-jones .
 ```
 
@@ -631,12 +631,12 @@ flvl-id:DSO-RTR-Dataset
 ### Regulation Versioning
 
 ```turtle
-flvl-id:NaturaWet_v2024-01 
+flvl-id:NaturaWet_v2026-01 
     a flvl-def:RegulatorySource ;
     dcterms:title "Wet natuurbescherming"@nl ;
     cprmv:implements "BWBR0037552" ;
-    cprmv:validFrom "2024-01-01"^^xsd:date ;
-    cprmv:validUntil "2024-12-31"^^xsd:date ;
+    cprmv:validFrom "2026-01-01"^^xsd:date ;
+    cprmv:validUntil "2026-12-31"^^xsd:date ;
     dcterms:replaces flvl-id:NaturaWet_v2023-07 ;
     prov:wasDerivedFrom <https://wetten.overheid.nl/jci1.3:c:BWBR0037552> .
 ```
@@ -662,7 +662,7 @@ flvl-id:annotation-nnn-001-v1
         flvl-def:annotationType "applicability-determination"@en
     ] ;
     oa:annotatedBy flvl-id:expert-environmental-law-jones ;
-    oa:annotatedAt "2024-11-15T14:23:00Z"^^xsd:dateTime ;
+    oa:annotatedAt "2026-11-15T14:23:00Z"^^xsd:dateTime ;
     flvl-def:approvalStatus flvl-vocab:pending-review ;
     flvl-def:requiresApprovalFrom flvl-id:role-senior-legal-advisor .
 ```
@@ -674,7 +674,7 @@ flvl-id:approval-001
     a flvl-def:Approval ;
     flvl-def:approvesAnnotation flvl-id:annotation-nnn-001-v1 ;
     prov:wasAssociatedWith flvl-id:expert-senior-legal-smith ;
-    prov:atTime "2024-11-18T09:15:00Z"^^xsd:dateTime ;
+    prov:atTime "2026-11-18T09:15:00Z"^^xsd:dateTime ;
     flvl-def:approvalDecision "approved"@en ;
     prov:generated flvl-id:annotation-nnn-001-v2 . # Updated version
 ```
@@ -690,7 +690,7 @@ flvl-id:LelystadRingwegBegrippenkader
     a skos:ConceptScheme ;
     dcterms:title "Lelystad Ringweg Begrippenkader"@nl ;
     dcterms:creator flvl-id:ProvinceFlevoland ;
-    dcterms:created "2024-11-01"^^xsd:date ;
+    dcterms:created "2026-11-01"^^xsd:date ;
     skos:hasTopConcept 
         flvl-concept:InfrastructuurProject ,
         flvl-concept:Omgevingsrecht ,

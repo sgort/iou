@@ -2,7 +2,7 @@
 
 All notable changes to this project are documented in this file.
 
-## [Version 7.0] - 2024-11-11
+## [Version 7.0] - 2026-11-11
 
 ### 🐛 Fixed
 - **Map Scaling Issue**: Fixed Leaflet map appearing as tiny box in upper-left corner
@@ -25,7 +25,7 @@ All notable changes to this project are documented in this file.
 
 ---
 
-## [Version 6.0] - 2024-11-11
+## [Version 6.0] - 2026-11-11
 
 ### ✨ New Features
 - **Leaflet.js Interactive Map**: Replaced static SVG with fully interactive map
@@ -60,7 +60,7 @@ All notable changes to this project are documented in this file.
 
 ---
 
-## [Version 5.0] - 2024-11-08
+## [Version 5.0] - 2026-11-08
 
 ### 🐛 Fixed
 - **Browser Cache Issue**: All console logs now prefixed with [V5] for version identification
@@ -80,7 +80,7 @@ All notable changes to this project are documented in this file.
 
 ---
 
-## [Version 4.0] - 2024-11-08
+## [Version 4.0] - 2026-11-08
 
 ### 🐛 Debug Build
 - Added extensive console logging to diagnose filtering issues
@@ -94,7 +94,7 @@ All notable changes to this project are documented in this file.
 
 ---
 
-## [Version 3.0] - 2024-11-08
+## [Version 3.0] - 2026-11-08
 
 ### ⚠️ Not Deployed
 - This version was created but not deployed due to cache issues
@@ -102,7 +102,7 @@ All notable changes to this project are documented in this file.
 
 ---
 
-## [Version 2.0] - 2024-11-08
+## [Version 2.0] - 2026-11-08
 
 ### ✨ New Features
 - **Interactive Overlap Filtering**: Overlaps now dynamically filter based on active map layers
@@ -128,7 +128,7 @@ All notable changes to this project are documented in this file.
 
 ---
 
-## [Version 1.0] - 2024-11-08
+## [Version 1.0] - 2026-11-08
 
 ### 🐛 Fixed
 - **RDF Graph Visualization Not Rendering**: Fixed entry point button IDs
@@ -147,7 +147,7 @@ All notable changes to this project are documented in this file.
 
 ---
 
-## [Initial Release] - 2024-11-08
+## [Initial Release] - 2026-11-08
 
 ### ✨ Features Implemented
 
@@ -403,6 +403,6 @@ For questions or issues:
 ---
 
 **Current Version**: 7.0  
-**Last Updated**: 2024-11-11  
+**Last Updated**: 2026-11-11  
 **Status**: ✅ Production Ready  
 **Demo URL**: https://iou.open-regels.nl

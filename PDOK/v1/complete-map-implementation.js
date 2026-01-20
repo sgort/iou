@@ -5,7 +5,7 @@
  * directly into your app.js to replace the current map initialization.
  * 
  * Version: 8.0
- * Date: 2024-11-11
+ * Date: 2026-11-11
  * Status: Ready for production (with sample data) or real PDOK fetch
  */
 
@@ -207,7 +207,7 @@ class LelystadDemo {
                     <strong style="color: #39870C; font-size: 14px;">NNN Corridor</strong><br>
                     <span style="font-size: 13px;">
                         <strong>Type:</strong> Natuurnetwerk Nederland<br>
-                        <strong>Regelgeving:</strong> NNN Wet 2024<br>
+                        <strong>Regelgeving:</strong> NNN Wet 2026<br>
                         Ecologische verbindingszone met bufferzones<br>
                         <em style="color: #767676; font-size: 11px;">Beschermde natuurzone</em>
                     </span>

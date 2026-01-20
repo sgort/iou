@@ -228,5 +228,5 @@ Voor vragen over deze demonstrator:
 ---
 
 **Status**: 🚧 Demonstrator - Niet voor productiegebruik
-**Laatste update**: November 2024
+**Laatste update**: November 2026
 **Versie**: 1.0.0
