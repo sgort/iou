@@ -472,6 +472,8 @@ class LelystadDemo {
         protected: habitatCircle, // layer-protected
       };
 
+      this.addProjectFeatures();
+
       console.log("[V8] Map initialization complete");
       console.log("[V8] Map center:", this.map.getCenter());
       console.log("[V8] Map zoom:", this.map.getZoom());
@@ -480,6 +482,102 @@ class LelystadDemo {
       console.log("[V8] Calling updateMapLayers to add initial layers...");
       this.updateMapLayers();
     }, 100); // Delay for DOM readiness
+  }
+
+  addProjectFeatures() {
+    console.log("[V9] Adding project-specific features...");
+
+    if (!projectFeatures) {
+      console.error("[V9] projectFeatures not found in data.js!");
+      return;
+    }
+
+    // ZOEKGEBIEDEN (Orange search areas)
+    this.zoekgebiedenLayers = [];
+    projectFeatures.zoekgebieden.forEach((gebied) => {
+      const polygon = L.polygon(gebied.polygon, {
+        color: "#FF9933",
+        fillColor: "#FFCC99",
+        fillOpacity: 0.35,
+        weight: 2,
+        dashArray: "5, 5",
+        className: "zoekgebied",
+      });
+
+      polygon.bindPopup(`
+                <div style="font-family: 'RO Sans', Arial, sans-serif;">
+                    <strong style="color: #FF9933; font-size: 14px;">🔍 ${gebied.name}</strong><br>
+                    <span style="font-size: 13px;">
+                        ${gebied.description}<br>
+                        <em style="color: #767676; font-size: 11px;">Zoekgebied voor tracé-opties</em>
+                    </span>
+                </div>
+            `);
+
+      this.zoekgebiedenLayers.push(polygon);
+    });
+
+    console.log(`[V9] Added ${this.zoekgebiedenLayers.length} zoekgebieden`);
+
+    // DWANGPUNTEN (Green constraint points)
+    this.dwangpuntenLayers = [];
+    projectFeatures.dwangpunten.forEach((punt) => {
+      const marker = L.circleMarker(punt.coordinates, {
+        radius: 10,
+        fillColor: "#39870C",
+        color: "#FFFFFF",
+        weight: 3,
+        opacity: 1,
+        fillOpacity: 0.9,
+        className: "dwangpunt",
+      });
+
+      marker.bindPopup(`
+                <div style="font-family: 'RO Sans', Arial, sans-serif;">
+                    <strong style="color: #39870C; font-size: 14px;">📍 ${punt.name}</strong><br>
+                    <span style="font-size: 13px;">
+                        ${punt.description}<br>
+                        <em style="color: #767676; font-size: 11px;">Dwangpunt (verplicht kruispunt)</em>
+                    </span>
+                </div>
+            `);
+
+      this.dwangpuntenLayers.push(marker);
+    });
+
+    console.log(`[V9] Added ${this.dwangpuntenLayers.length} dwangpunten`);
+
+    // LOCATION LABELS
+    this.locationLabels = [];
+    projectFeatures.locations.forEach((loc) => {
+      const icon = L.divIcon({
+        className: "location-label",
+        html: `<div style="
+                    font-family: 'RO Sans', Arial, sans-serif;
+                    font-size: 12px;
+                    font-weight: 600;
+                    color: #2C3E50;
+                    background: rgba(255, 255, 255, 0.85);
+                    padding: 2px 6px;
+                    border-radius: 3px;
+                    border: 1px solid #95A5A6;
+                    white-space: nowrap;
+                    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+                ">${loc.name}</div>`,
+        iconSize: null,
+        iconAnchor: [0, 0],
+      });
+
+      const marker = L.marker(loc.coordinates, { icon: icon });
+      this.locationLabels.push(marker);
+    });
+
+    console.log(`[V9] Added ${this.locationLabels.length} location labels`);
+
+    // Store in mapLayers for toggle functionality
+    this.mapLayers.zoekgebieden = L.layerGroup(this.zoekgebiedenLayers);
+    this.mapLayers.dwangpunten = L.layerGroup(this.dwangpuntenLayers);
+    this.mapLayers.labels = L.layerGroup(this.locationLabels);
   }
 
   updateMapLayers() {
@@ -498,6 +596,11 @@ class LelystadDemo {
         document.querySelector('[data-layer="natura2000"]')?.checked || false,
       protected:
         document.querySelector('[data-layer="protected"]')?.checked || false,
+      zoekgebieden:
+        document.querySelector('[data-layer="zoekgebieden"]')?.checked || false,
+      dwangpunten:
+        document.querySelector('[data-layer="dwangpunten"]')?.checked || false,
+      labels: document.querySelector('[data-layer="labels"]')?.checked || false,
     };
 
     // Add or remove layers based on checkbox state
@@ -554,31 +657,6 @@ class LelystadDemo {
       console.error("[V7] Error in toggleMapLayer:", error);
     }
   }
-
-  // OLD SVG-BASED MAP VISUALIZATION (Replaced by Leaflet)
-  // Kept for reference in case we need to revert
-  /*
-    updateMapVisualization() {
-        const layers = {
-            provincial: document.querySelector('[data-layer="provincial"]').checked,
-            municipal: document.querySelector('[data-layer="municipal"]').checked,
-            nnn: document.querySelector('[data-layer="nnn"]').checked,
-            natura2000: document.querySelector('[data-layer="natura2000"]').checked,
-            protected: document.querySelector('[data-layer="protected"]').checked
-        };
-        
-        const mapContainer = document.getElementById('jurisdictional-map');
-        
-        let svg = `
-            <div class="map-placeholder">
-                <svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
-        `;
-        
-        // ... (all the SVG code)
-        
-        mapContainer.innerHTML = svg;
-    }
-    */
 
   renderOverlapAnalysis() {
     console.log("[V7] === renderOverlapAnalysis START ===");

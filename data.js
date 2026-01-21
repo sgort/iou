@@ -77,8 +77,63 @@ const realRoadData = {
     }
 };
 
-// Mock data for Lelystad Ringweg Demonstrator
+// ============================================================================
+// NEW: PROJECT-SPECIFIC FEATURES  ← ADD THIS ENTIRE SECTION
+// ============================================================================
+const projectFeatures = {
+    zoekgebieden: [
+        {
+            id: 'zoekgebied-noord',
+            name: 'Zoekgebied Noord',
+            description: 'Noordelijk zoekgebied tussen Havendiep en Westerdreef',
+            polygon: [
+                [52.5145, 5.4685], [52.5165, 5.4720], [52.5155, 5.4765],
+                [52.5125, 5.4780], [52.5105, 5.4760], [52.5115, 5.4705],
+                [52.5145, 5.4685]
+            ]
+        },
+        {
+            id: 'zoekgebied-midden',
+            name: 'Zoekgebied Midden',
+            description: 'Middengebied rond Waterkop en Warande',
+            polygon: [
+                [52.5075, 5.4655], [52.5105, 5.4685], [52.5095, 5.4725],
+                [52.5065, 5.4745], [52.5045, 5.4715], [52.5055, 5.4675],
+                [52.5075, 5.4655]
+            ]
+        }
+    ],
+    
+    dwangpunten: [
+        {
+            id: 'dwangpunt-waterkop',
+            name: 'Waterkop',
+            description: 'Kruising met bestaande infrastructuur',
+            coordinates: [52.5090, 5.4680]
+        },
+        {
+            id: 'dwangpunt-warande',
+            name: 'Warande',
+            description: 'Knooppunt bij Warande',
+            coordinates: [52.5065, 5.4710]
+        }
+    ],
+    
+    locations: [
+        { id: 'loc-westerdreef', name: 'Westerdreef', coordinates: [52.5170, 5.4655] },
+        { id: 'loc-havendiep', name: 'Havendiep', coordinates: [52.5165, 5.4750] },
+        { id: 'loc-waterkop', name: 'Waterkop', coordinates: [52.5095, 5.4665] },
+        { id: 'loc-warande', name: 'Warande', coordinates: [52.5055, 5.4695] },
+        { id: 'loc-poort-lelystad', name: 'Poort Lelystad', coordinates: [52.5085, 5.4625] },
+        { id: 'loc-burgerweg', name: 'Burgerweg', coordinates: [52.5005, 5.4645] },
+        { id: 'loc-lage-vaart', name: 'Lage Vaart', coordinates: [52.5035, 5.4720] },
+        { id: 'loc-aansluiting-9', name: 'Aansluiting 9', coordinates: [52.5195, 5.4805] }
+    ]
+};
 
+// ============================================================================
+// Mock data for Lelystad Ringweg Demonstrator
+// ============================================================================
 const mockData = {
     // Requirements for Compliance Dashboard
     requirements: [
